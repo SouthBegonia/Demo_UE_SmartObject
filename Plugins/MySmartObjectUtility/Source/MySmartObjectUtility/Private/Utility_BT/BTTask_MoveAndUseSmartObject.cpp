@@ -58,7 +58,7 @@ EBTNodeResult::Type UBTTask_MoveAndUseSmartObject::ExecuteTask(UBehaviorTreeComp
 		UMotionWarpingComponent* MotionWarpingComp = MyController->GetPawn()->GetComponentByClass<UMotionWarpingComponent>();
 
 		if (MotionWarpingComp != nullptr)
-			MotionWarpingComp->AddOrUpdateWarpTargetFromTransform(FName(TEXT("SmartObjectWarp")), GoalTransform);
+			MotionWarpingComp->AddOrUpdateWarpTargetFromTransform(SlotMotionWarpingName, GoalTransform);
 	}
 
 	// Register SlotInvalidationEvent

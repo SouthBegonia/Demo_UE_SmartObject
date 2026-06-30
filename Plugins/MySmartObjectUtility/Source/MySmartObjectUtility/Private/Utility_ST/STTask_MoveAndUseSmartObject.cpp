@@ -58,7 +58,7 @@ EStateTreeRunStatus FSTTask_MoveAndUseSmartObject::EnterState(FStateTreeExecutio
 		UMotionWarpingComponent* MotionWarpingComp = InstanceData.AIController->GetPawn()->GetComponentByClass<UMotionWarpingComponent>();
 
 		if (MotionWarpingComp != nullptr)
-			MotionWarpingComp->AddOrUpdateWarpTargetFromTransform(FName(TEXT("SmartObjectWarp")), InstanceData.SOGoalTransform);
+			MotionWarpingComp->AddOrUpdateWarpTargetFromTransform(InstanceData.SlotMotionWarpingName, InstanceData.SOGoalTransform);
 	}
 
 	// Register SlotInvalidationEvent
