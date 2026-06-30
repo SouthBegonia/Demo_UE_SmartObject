@@ -45,6 +45,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="SmartObject")
 	TEnumAsByte<EGoalLocationTypeForMoveAndUseSmartObjectTask> GoalLocationType;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="SmartObject", meta=(ToolTip = "Warping Pawn to SlotTransform"))
+	FName SlotMotionWarpingName = TEXT("SmartObjectWarp");
+
 protected:
 	UPROPERTY()
 	TObjectPtr<class UAITask_MoveTo> MoveToTask;
@@ -66,8 +69,8 @@ protected:
 	void OnSlotInvalidated(const FSmartObjectClaimHandle& ClaimHandle, ESmartObjectSlotState State);
 	void OnReceiveSmartObjectEvent( const FSmartObjectEventData& Event);
 
-	bool GetGoalLocation(EGoalLocationTypeForMoveAndUseSmartObjectTask InGoalLocationType, const FSmartObjectClaimHandle& InClaimHandle, FVector& OutGoalLocation);
-	bool GetSlotLocation(FVector& OutLocation, const FSmartObjectClaimHandle& InClaimHandle) const;
-	bool GetEntranceLocation(FVector& OutLocation, const FSmartObjectClaimHandle& InClaimHandle, FSmartObjectSlotEntranceLocationRequest& InEntranceRequest) const;
+	bool GetGoalTransform(EGoalLocationTypeForMoveAndUseSmartObjectTask InGoalLocationType, const FSmartObjectClaimHandle& InClaimHandle, FTransform& OutGoalTransform);
+	bool GetSlotTransform(FTransform& OutGoalTransform, const FSmartObjectClaimHandle& InClaimHandle) const;
+	bool GetEntranceTransform(FTransform& OutGoalTransform, const FSmartObjectClaimHandle& InClaimHandle, FSmartObjectSlotEntranceLocationRequest& InEntranceRequest) const;
 };
 

@@ -50,7 +50,7 @@ ASmartObjectActorBase::ASmartObjectActorBase(const FObjectInitializer& ObjectIni
 			SpriteComponent->SpriteInfo.Category = ConstructorStatics.NotesID;
 			SpriteComponent->SpriteInfo.DisplayName = ConstructorStatics.GenericSOName;
 			SpriteComponent->SetupAttachment(RootSOComp);
-			SpriteComponent->Mobility = EComponentMobility::Static;
+			SpriteComponent->Mobility = EComponentMobility::Movable;
 		}
 
 		if (RenderingComponent)

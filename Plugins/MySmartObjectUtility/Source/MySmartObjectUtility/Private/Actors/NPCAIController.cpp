@@ -40,7 +40,8 @@ void ANPCAIController::OnPossess(APawn* InPawn)
 	}
 	else if (StateTreeAIComp && !StateTreeAIComp->IsRunning())
 	{
-		StateTreeAIComp->StartLogic();
+		// delay calling StartLogic() in @UStateTreeComponent::BeginPlay()
+		StateTreeAIComp->SetStartLogicAutomatically(true);		//StateTreeAIComp->StartLogic();
 		bStartAILogicSuccess = true;
 	}
 

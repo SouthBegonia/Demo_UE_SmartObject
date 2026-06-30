@@ -14,6 +14,7 @@
 #include "GameplayBehaviorConfig.h"
 #include "GameplayBehaviorSubsystem.h"
 #include "GameplayBehaviorSmartObjectBehaviorDefinition.h"
+#include "MotionWarpingComponent.h"
 #include "Interface/SmartObjectInteracteeInterface.h"
 #include "Interface/SmartObjectInteractorInterface.h"
 
@@ -44,10 +45,20 @@ EBTNodeResult::Type UBTTask_MoveAndUseSmartObject::ExecuteTask(UBehaviorTreeComp
 	ClaimedHandle = TempClaimHandle;
 
 	// Get GoalLocation
-	FVector GoalLocation = FVector::ZeroVector;
-	if (!GetGoalLocation(GoalLocationType, ClaimedHandle, GoalLocation))
+	FTransform GoalTransform = FTransform::Identity;
+	if (!GetGoalTransform(GoalLocationType, ClaimedHandle, GoalTransform))
 	{
 		return EBTNodeResult::Failed;
+	}
+	FVector GoalLocation = GoalTransform.GetLocation();
+
+	// Set MotionWarping
+	if (!SlotMotionWarpingName.IsNone())
+	{
+		UMotionWarpingComponent* MotionWarpingComp = MyController->GetPawn()->GetComponentByClass<UMotionWarpingComponent>();
+
+		if (MotionWarpingComp != nullptr)
+			MotionWarpingComp->AddOrUpdateWarpTargetFromTransform(FName(TEXT("SmartObjectWarp")), GoalTransform);
 	}
 
 	// Register SlotInvalidationEvent
@@ -258,33 +269,33 @@ void UBTTask_MoveAndUseSmartObject::OnReceiveSmartObjectEvent(const FSmartObject
 }
 
 
-bool UBTTask_MoveAndUseSmartObject::GetGoalLocation(EGoalLocationTypeForMoveAndUseSmartObjectTask InGoalLocationType, const FSmartObjectClaimHandle& InClaimHandle, FVector& OutGoalLocation)
+bool UBTTask_MoveAndUseSmartObject::GetGoalTransform(EGoalLocationTypeForMoveAndUseSmartObjectTask InGoalLocationType, const FSmartObjectClaimHandle& InClaimHandle, FTransform& OutGoalTransform)
 {
 	if (InGoalLocationType == EntranceOrSlot)
 	{
-		return GetEntranceLocation(OutGoalLocation, InClaimHandle, EntranceRequest)
-			|| GetSlotLocation(OutGoalLocation, InClaimHandle);
+		return GetEntranceTransform(OutGoalTransform, InClaimHandle, EntranceRequest)
+			|| GetSlotTransform(OutGoalTransform, InClaimHandle);
 	}
 	if (InGoalLocationType == OnlyEntrance)
 	{
-		return GetEntranceLocation(OutGoalLocation, InClaimHandle, EntranceRequest);
+		return GetEntranceTransform(OutGoalTransform, InClaimHandle, EntranceRequest);
 	}
 	if (InGoalLocationType == OnlySlot)
 	{
-		return GetSlotLocation(OutGoalLocation, InClaimHandle);
+		return GetSlotTransform(OutGoalTransform, InClaimHandle);
 	}
 
 	return false;
 }
 
-bool UBTTask_MoveAndUseSmartObject::GetSlotLocation(FVector& OutLocation, const FSmartObjectClaimHandle& InClaimHandle) const
+bool UBTTask_MoveAndUseSmartObject::GetSlotTransform(FTransform& OutGoalTransform, const FSmartObjectClaimHandle& InClaimHandle) const
 {
 	if (const USmartObjectSubsystem* SmartObjectSubsystem = USmartObjectSubsystem::GetCurrent(GetWorld()); SmartObjectSubsystem != nullptr)
 	{
 		const TOptional<FTransform> GoalTransform = SmartObjectSubsystem->GetSlotTransform(InClaimHandle);
 		if (GoalTransform.IsSet())
 		{
-			OutLocation = GoalTransform.GetValue().GetLocation();
+			OutGoalTransform = GoalTransform.GetValue();
 			return true;
 		}
 	}
@@ -292,7 +303,7 @@ bool UBTTask_MoveAndUseSmartObject::GetSlotLocation(FVector& OutLocation, const 
 	return false;
 }
 
-bool UBTTask_MoveAndUseSmartObject::GetEntranceLocation(FVector& OutLocation, const FSmartObjectClaimHandle& InClaimHandle, FSmartObjectSlotEntranceLocationRequest& InEntranceRequest) const
+bool UBTTask_MoveAndUseSmartObject::GetEntranceTransform(FTransform& OutGoalTransform, const FSmartObjectClaimHandle& InClaimHandle, FSmartObjectSlotEntranceLocationRequest& InEntranceRequest) const
 {
 	if (const USmartObjectSubsystem* SmartObjectSubsystem = USmartObjectSubsystem::GetCurrent(GetWorld()); SmartObjectSubsystem != nullptr)
 	{
@@ -301,7 +312,7 @@ bool UBTTask_MoveAndUseSmartObject::GetEntranceLocation(FVector& OutLocation, co
 		FSmartObjectSlotEntranceLocationResult Result;
 		if (SmartObjectSubsystem->FindEntranceLocationForSlot(InClaimHandle.SlotHandle, Request, Result))
 		{
-			OutLocation = Result.Location;
+			OutGoalTransform = FTransform(Result.Rotation, Result.Location);
 			return true;
 		}
 	}
