@@ -94,7 +94,7 @@ Demo_UE_SmartObject
 
 例如项目内 通过 BehaviorTree及StateTree 实现的 **相同功能的交互示例**：首先尝试SamrtObject交互（查找、移动、交互行为），交互成功、失败后进行随机位置的移动，后从头重复
 
-![](https://southbegonia.oss-cn-chengdu.aliyuncs.com/Pic/20260701161817748.gif)
+![](https://southbegonia.oss-cn-chengdu.aliyuncs.com/Pic/20260701185938379.gif)
 
 ↓↓↓ BT_SO_NPC：
 
