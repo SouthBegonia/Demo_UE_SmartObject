@@ -16,6 +16,16 @@ struct FBTQuerySOMemory
 	int32 EQSRequestID;
 };
 
+UENUM(BlueprintType, DisplayName="SlotSelectionMethod")
+enum ESlotSelectionMethodForBTFindSmartObject
+{
+	None = 0 UMETA(DisplayName = "Default"),
+
+	Closest,
+	Random,
+};
+
+
 /**
  * Task for find and claim slot from SmartObject
  */
@@ -57,6 +67,9 @@ protected:
 	/** Used for smart object querying if EQSRequest is not configured */
 	UPROPERTY(EditAnywhere, Category = SmartObjects, meta=(DisplayName="QueryBoxRadius", UIMin = "0.0", EditCondition = "EQSRequest.QueryTemplate == nullptr"))
 	float Radius;
+
+	UPROPERTY(EditAnywhere, Category = SmartObjects , meta=(DisplayName = "SlotSelectionMethod", EditCondition = "EQSRequest.QueryTemplate == nullptr"))
+	TEnumAsByte<ESlotSelectionMethodForBTFindSmartObject> SlotSelectionMethod = ESlotSelectionMethodForBTFindSmartObject::Closest;
 
 
 	UPROPERTY(EditAnywhere, Category = SmartObjects, meta=(EditCondition = "Radius == 0.0"))

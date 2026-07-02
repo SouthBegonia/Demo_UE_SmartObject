@@ -3,6 +3,7 @@
 #include "EnvQueryItemType_SmartObject.h"
 #include "GameplayBehaviorSmartObjectBehaviorDefinition.h"
 #include "GameplayTagAssetInterface.h"
+#include "Algo/RandomShuffle.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "EnvironmentQuery/EnvQueryManager.h"
 #include "VisualLogger/VisualLoggerTypes.h"
@@ -69,6 +70,26 @@ EStateTreeRunStatus FSTTask_FindSmartObject::EnterState(FStateTreeExecutionConte
 
 		if (SmartObjectSubsystem->FindSmartObjects(Request, Results, ActorUserDataView))
 		{
+			// Sorting results
+			if (InstanceData.SlotSelectionMethod == ESlotSelectionMethodForSTFindSmartObject::Closest)
+			{
+				Results.Sort([&SmartObjectSubsystem, &UserLocation](const FSmartObjectRequestResult& A, const FSmartObjectRequestResult& B)
+				{
+					const FSmartObjectSlotHandle& SlotHandleA = A.SlotHandle;
+					const FSmartObjectSlotHandle& SlotHandleB = B.SlotHandle;
+
+					const FTransform& SlotTransformA = SmartObjectSubsystem->GetSlotTransform(SlotHandleA).GetValue();
+					const FTransform& SlotTransformB = SmartObjectSubsystem->GetSlotTransform(SlotHandleB).GetValue();
+
+					const float DistanceA = FVector::Dist(UserLocation, SlotTransformA.GetLocation());
+					const float DistanceB = FVector::Dist(UserLocation, SlotTransformB.GetLocation());
+
+					return DistanceA < DistanceB;
+				});
+			}else if (InstanceData.SlotSelectionMethod == ESlotSelectionMethodForSTFindSmartObject::Random)
+				Algo::RandomShuffle(Results);
+
+			// try selecting and claim a valid Slot
 			for (const FSmartObjectRequestResult& Result : Results)
 			{
 				FSmartObjectClaimHandle ClaimHandle = SmartObjectSubsystem->MarkSlotAsClaimed(Result.SlotHandle, InstanceData.ClaimPriority, ActorUserDataView);
@@ -108,6 +129,8 @@ EStateTreeRunStatus FSTTask_FindSmartObject::Tick(FStateTreeExecutionContext& Co
 			{
 				const FSmartObjectActorUserData ActorUserData(Cast<AActor>(InstanceData.QueryOwner));
 				const FConstStructView ActorUserDataView(FConstStructView::Make(ActorUserData));
+
+				// Sorting results: Sorting or selecting item by EQS Test will be better
 
 				// we could use QueryResult.GetItemAsTypeChecked, but the below implementation is more efficient
 				for (int i = 0; i < InstanceData.QueryResult->Items.Num(); ++i)

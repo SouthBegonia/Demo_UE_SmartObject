@@ -10,6 +10,7 @@
 #include "VisualLogger/VisualLogger.h"
 #include "EnvironmentQuery/EnvQueryManager.h"
 #include "EnvQueryItemType_SmartObject.h"
+#include "Algo/RandomShuffle.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Interface/SmartObjectInteractorInterface.h"
 
@@ -82,6 +83,25 @@ EBTNodeResult::Type UBTTask_FindSmartObject::ExecuteTask(UBehaviorTreeComponent&
 	
 		if (SmartObjectSubsystem->FindSmartObjects(Request, Results, ActorUserDataView))
 		{
+			// Sorting results
+			if (SlotSelectionMethod == ESlotSelectionMethodForBTFindSmartObject::Closest)
+			{
+				Results.Sort([&SmartObjectSubsystem, &UserLocation](const FSmartObjectRequestResult& A, const FSmartObjectRequestResult& B)
+				{
+					const FSmartObjectSlotHandle& SlotHandleA = A.SlotHandle;
+					const FSmartObjectSlotHandle& SlotHandleB = B.SlotHandle;
+
+					const FTransform& SlotTransformA = SmartObjectSubsystem->GetSlotTransform(SlotHandleA).GetValue();
+					const FTransform& SlotTransformB = SmartObjectSubsystem->GetSlotTransform(SlotHandleB).GetValue();
+
+					const float DistanceA = FVector::Dist(UserLocation, SlotTransformA.GetLocation());
+					const float DistanceB = FVector::Dist(UserLocation, SlotTransformB.GetLocation());
+
+					return DistanceA < DistanceB;
+				});
+			}else if (SlotSelectionMethod == ESlotSelectionMethodForBTFindSmartObject::Random)
+				Algo::RandomShuffle(Results);
+
 			for (const FSmartObjectRequestResult& Result : Results)
 			{
 				FSmartObjectClaimHandle ClaimHandle = SmartObjectSubsystem->MarkSlotAsClaimed(Result.SlotHandle, ClaimPriority, ActorUserDataView);
@@ -226,6 +246,8 @@ void UBTTask_FindSmartObject::OnQueryFinished(TSharedPtr<FEnvQueryResult> Result
 		{
 			const FSmartObjectActorUserData ActorUserData(Cast<AActor>(Result->Owner.Get()));
 			const FConstStructView ActorUserDataView(FConstStructView::Make(ActorUserData));
+
+			// Sorting results: Sorting or selecting item by EQS Test will be better
 
 			// we could use QueryResult.GetItemAsTypeChecked, but the below implementation is more efficient
 			for (int i = 0; i < QueryResult.Items.Num(); ++i)

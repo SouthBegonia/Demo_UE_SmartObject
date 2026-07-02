@@ -7,6 +7,16 @@
 #include "Utility_BT/BTTask_GetClaimedSmartObjectSlotTransform.h"
 #include "STTask_FindSmartObject.generated.h"
 
+UENUM(BlueprintType, DisplayName="SlotSelectionMethod")
+enum class ESlotSelectionMethodForSTFindSmartObject : uint8
+{
+	None = 0 UMETA(DisplayName = "Default"),
+
+	Closest,
+	Random,
+};
+
+
 USTRUCT()
 struct FStateTreeFindSmartObjectInstanceData
 {
@@ -42,6 +52,9 @@ struct FStateTreeFindSmartObjectInstanceData
 	/** Used for smart object querying if QueryTemplate is not configured */
 	UPROPERTY(EditAnywhere, Category = Parameter , meta=(DisplayName = "QueryBoxRadius", UIMin = "0.0", EditCondition = "QueryTemplate == nullptr"))
 	float Radius;
+
+	UPROPERTY(EditAnywhere, Category = Parameter , meta=(DisplayName = "SlotSelectionMethod", EditCondition = "QueryTemplate == nullptr"))
+	ESlotSelectionMethodForSTFindSmartObject SlotSelectionMethod = ESlotSelectionMethodForSTFindSmartObject::Closest;
 
 
 	// The query template to run
