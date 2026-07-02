@@ -8,6 +8,12 @@
 
 
 
+如何导入本项目 **功能拓展的Plugin** 到你自己的项目：
+
+直接拷贝本项目的 插件文件夹（[*Demo_UE_SmartObject\Plugins\MySmartObjectUtility*](https://github.com/SouthBegonia/Demo_UE_SmartObject/tree/main/Plugins/MySmartObjectUtility) 到 你自己项目的Plugins目录下（*[projectName]\Plugins*），后于项目内启用插件（Edit->Plugins->MySmartObjectUtility）即可
+
+
+
 -----------------------------------------------------------
 
 - [SmartObjects交互流程简介](#smartobjects交互流程简介)
