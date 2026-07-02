@@ -7,7 +7,7 @@
 #include "GameplayBehaviorConfig_NPC_PlayMontage.generated.h"
 
 /**
- * 
+ * A GameplayBehaviorConfig for defining the parameter of montages
  */
 UCLASS()
 class DEMO_UE_SMARTOBJECT_API UGameplayBehaviorConfig_NPC_PlayMontage : public UGameplayBehaviorConfig
@@ -26,14 +26,11 @@ public:
 	bool IsLooped() const { return (bLoop != 0); }
 
 protected:
-	UPROPERTY(EditAnywhere, Category = SmartObject)
+	UPROPERTY(EditAnywhere, Category = SmartObject, meta=(ShortTooltip = "The single montage will be played"))
 	mutable TSoftObjectPtr<UAnimMontage> AnimMontage;
 
-	UPROPERTY(EditAnywhere, Category = SmartObject)
+	UPROPERTY(EditAnywhere, Category = SmartObject, meta=(ShortTooltip = "A random montage from list will be played"))
 	mutable TArray<TSoftObjectPtr<UAnimMontage>> RandomAnimMontageList;
-
-	UPROPERTY()
-	mutable TObjectPtr<UAnimMontage> TargetAnimMontage;
 
 	UPROPERTY(EditAnywhere, Category = SmartObject)
 	float PlayRate = 1.f;
@@ -43,4 +40,8 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = SmartObject)
 	uint32 bLoop : 1;
+
+
+	UPROPERTY()
+	mutable TObjectPtr<UAnimMontage> TargetAnimMontage;
 };
