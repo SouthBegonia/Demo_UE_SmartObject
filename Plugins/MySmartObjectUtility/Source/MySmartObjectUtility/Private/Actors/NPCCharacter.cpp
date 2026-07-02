@@ -8,6 +8,7 @@
 #include "SmartObjectBlueprintFunctionLibrary.h"
 #include "SmartObjectUserComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Components/SkeletalMeshComponent.h"
 
 
 // Sets default values

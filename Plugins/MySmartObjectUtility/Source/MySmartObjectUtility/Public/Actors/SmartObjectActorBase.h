@@ -9,6 +9,7 @@
 #include "SmartObjectActorBase.generated.h"
 
 struct FSmartObjectEventData;
+class USceneComponent;
 class USmartObjectRenderingComponent;
 class USmartObjectComponent;
 
@@ -42,14 +43,14 @@ public:
 
 protected:
 	/* The Root SceneComp. You can add StaticMeshComp to there if you need it. */
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SmartObjectActorBase")
 	TObjectPtr<USceneComponent> Root;
 
 	/* Nodes that mount SmartObject Core Comp(USmartObjectComponent/USmartObjectRenderingComponent) */
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SmartObjectActorBase")
 	TObjectPtr<USceneComponent> RootSOComp;
 
-	UPROPERTY(EditAnywhere, Category = SmartObject, NoClear)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SmartObjectActorBase", NoClear)
 	TObjectPtr<USmartObjectComponent> SOComponent;
 
 #if WITH_EDITORONLY_DATA

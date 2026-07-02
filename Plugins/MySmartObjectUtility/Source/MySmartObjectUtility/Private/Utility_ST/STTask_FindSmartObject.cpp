@@ -5,6 +5,8 @@
 #include "GameplayTagAssetInterface.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "EnvironmentQuery/EnvQueryManager.h"
+#include "VisualLogger/VisualLoggerTypes.h"
+#include "VisualLogger/VisualLogger.h"
 
 #define LOCTEXT_NAMESPACE "GameplayStateTree"
 

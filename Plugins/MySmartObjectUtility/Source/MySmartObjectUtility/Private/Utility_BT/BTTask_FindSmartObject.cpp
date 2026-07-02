@@ -159,11 +159,6 @@ FString UBTTask_FindSmartObject::GetStaticDescription() const
 	return FString::Printf(TEXT("Result ClaimedHandle in BBKey : %s"), *KeyDesc);
 }
 
-FName UBTTask_FindSmartObject::GetNodeIconName() const
-{
-	return Super::GetNodeIconName();
-}
-
 void UBTTask_FindSmartObject::InitializeFromAsset(UBehaviorTree& Asset)
 {
 	Super::InitializeFromAsset(Asset);

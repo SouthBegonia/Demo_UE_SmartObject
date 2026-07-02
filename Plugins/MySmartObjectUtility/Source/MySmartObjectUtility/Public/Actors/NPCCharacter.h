@@ -37,14 +37,14 @@ protected:
 	UPROPERTY()
 	TObjectPtr<UAbilitySystemComponent> ASC;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "NPCCharacter")
 	TObjectPtr<USmartObjectUserComponent> SOUerComp;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "NPCCharacter")
 	TObjectPtr<UMotionWarpingComponent> MotionWarpComp;
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "NPCCharacter")
 	FName DefaultSOClaimHandleBBKeyName = FName(TEXT("SOClaimHandle"));
 
 	#pragma region ISmartObjectInteractorInterface

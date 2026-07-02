@@ -12,6 +12,8 @@
 #include "Interface/SmartObjectInteracteeInterface.h"
 #include "Interface/SmartObjectInteractorInterface.h"
 #include "Tasks/AITask_MoveTo.h"
+#include "VisualLogger/VisualLoggerTypes.h"
+#include "VisualLogger/VisualLogger.h"
 
 
 #define LOCTEXT_NAMESPACE "GameplayStateTree"

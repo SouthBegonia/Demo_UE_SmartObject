@@ -26,6 +26,12 @@ public class MySmartObjectUtility : ModuleRules
 			new string[]
 			{
 				"Core",
+
+				"AIModule", "GameplayTasks",
+				"SmartObjectsModule", "GameplayBehaviorSmartObjectsModule", "GameplayBehaviorsModule",
+				"StateTreeModule", "GameplayStateTreeModule",
+				"MotionWarping", "GameplayAbilities", "GameplayTags", "NavigationSystem"
+
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);
@@ -38,11 +44,6 @@ public class MySmartObjectUtility : ModuleRules
 				"Engine",
 				"Slate",
 				"SlateCore",
-				
-				"AIModule", "GameplayTasks",
-				"SmartObjectsModule", "GameplayBehaviorSmartObjectsModule", "GameplayBehaviorsModule",
-				"StateTreeModule", "GameplayStateTreeModule",
-				"MotionWarping", "GameplayAbilities", "GameplayTags", "NavigationSystem"
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);

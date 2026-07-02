@@ -36,7 +36,6 @@ protected:
 	virtual void CleanupMemory(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, EBTMemoryClear::Type CleanupType) const override;
 
 	virtual FString GetStaticDescription() const override;
-	virtual FName GetNodeIconName() const override;
 
 	virtual void InitializeFromAsset(UBehaviorTree& Asset) override;
 
