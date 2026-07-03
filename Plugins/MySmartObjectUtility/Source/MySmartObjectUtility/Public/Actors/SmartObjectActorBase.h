@@ -54,6 +54,9 @@ protected:
 	TObjectPtr<USmartObjectComponent> SOComponent;
 
 #if WITH_EDITORONLY_DATA
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SmartObjectActorBase", NoClear)
+	TObjectPtr<UBillboardComponent> SpriteComponent;
+
 	UPROPERTY(NoClear)
 	TObjectPtr<USmartObjectRenderingComponent> RenderingComponent;
 #endif // WITH_EDITORONLY_DATA

@@ -24,7 +24,7 @@ ASmartObjectActorBase::ASmartObjectActorBase(const FObjectInitializer& ObjectIni
 
 
 #if WITH_EDITORONLY_DATA
-	UBillboardComponent* SpriteComponent = CreateEditorOnlyDefaultSubobject<UBillboardComponent>(TEXT("Sprite"));
+	SpriteComponent = CreateEditorOnlyDefaultSubobject<UBillboardComponent>(TEXT("Sprite"));
 	RenderingComponent = CreateEditorOnlyDefaultSubobject<USmartObjectRenderingComponent>(TEXT("RenderComp"));
 
 	if (!IsRunningCommandlet())

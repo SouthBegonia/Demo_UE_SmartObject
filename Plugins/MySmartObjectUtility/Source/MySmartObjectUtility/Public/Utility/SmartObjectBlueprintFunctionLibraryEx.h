@@ -16,14 +16,14 @@ class MYSMARTOBJECTUTILITY_API USmartObjectBlueprintFunctionLibraryEx : public U
 {
 	GENERATED_BODY()
 public:
-	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "SmartObject", meta=(WorldContext="WorldContextObject"))
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "SmartObject")
 	static bool GetSlotTransformWithSlotHandle(UObject* WorldContextObject, FTransform& OutSlotTransform, const FSmartObjectSlotHandle& SlotHandle);
-	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "SmartObject", meta=(WorldContext="WorldContextObject"))
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "SmartObject")
 	static bool GetSlotEntranceTransformWithSlotHandle(UObject* WorldContextObject, FTransform& OutEntranceTransform, const FSmartObjectSlotHandle& SlotHandle, FSmartObjectSlotEntranceLocationRequest EntranceRequest = FSmartObjectSlotEntranceLocationRequest());
 
-	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "SmartObject", meta=(WorldContext="WorldContextObject"))
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "SmartObject")
 	static bool GetSlotTransformWithClaimHandle(UObject* WorldContextObject, FTransform& OutSlotTransform, const FSmartObjectClaimHandle& ClaimHandle) { return GetSlotTransformWithSlotHandle(WorldContextObject, OutSlotTransform, ClaimHandle.SlotHandle); }
-	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "SmartObject", meta=(WorldContext="WorldContextObject"))
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "SmartObject")
 	static bool GetSlotEntranceTransformWithClaimHandle(UObject* WorldContextObject, FTransform& OutEntranceTransform, const FSmartObjectClaimHandle& ClaimHandle, FSmartObjectSlotEntranceLocationRequest EntranceRequest = FSmartObjectSlotEntranceLocationRequest()) { return GetSlotEntranceTransformWithSlotHandle(WorldContextObject, OutEntranceTransform, ClaimHandle.SlotHandle, EntranceRequest); }
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "SmartObject")
