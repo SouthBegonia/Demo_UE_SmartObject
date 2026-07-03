@@ -18,6 +18,7 @@ public:
 	UGameplayBehavior_NPC_PlayMontage(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
 	virtual bool Trigger(AActor& InAvatar, const UGameplayBehaviorConfig* Config = nullptr, AActor* SmartObjectOwner = nullptr) override;
+	virtual bool NeedsInstance(const UGameplayBehaviorConfig* Config) const override;
 
 	bool PlayMontageNew(AActor& InAvatar, UAnimMontage& AnimMontage, const float InPlayRate = 1.f, const FName StartSectionName = NAME_None, const bool bLoop = false);
 

@@ -38,6 +38,14 @@ bool UGameplayBehavior_NPC_PlayMontage::Trigger(AActor& InAvatar, const UGamepla
 	return PlayMontageNew(InAvatar, *Anim, AnimConfig->GetPlayRate(), AnimConfig->GetStartSectionName(), AnimConfig->IsLooped());
 }
 
+bool UGameplayBehavior_NPC_PlayMontage::NeedsInstance(const UGameplayBehaviorConfig* Config) const
+{
+	if (Cast<const UGameplayBehaviorConfig_NPC_PlayMontage>(Config) != nullptr)
+		return true;
+
+	return Super::NeedsInstance(Config);
+}
+
 bool UGameplayBehavior_NPC_PlayMontage::PlayMontageNew(AActor& InAvatar, UAnimMontage& AnimMontage, const float InPlayRate, const FName StartSectionName, const bool bLoop)
 {
 	bool bSuccess = false;
