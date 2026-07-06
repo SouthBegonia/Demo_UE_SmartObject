@@ -30,6 +30,7 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override { return ASC; }
 
@@ -64,6 +65,6 @@ public:
 	void K2_OnInteractionEnd();
 
 private:
-	UPROPERTY()
+	UPROPERTY(Transient, Replicated)
 	FSmartObjectClaimHandle SOClaimHandle;
 };

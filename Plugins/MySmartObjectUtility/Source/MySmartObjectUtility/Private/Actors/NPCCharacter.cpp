@@ -9,6 +9,7 @@
 #include "SmartObjectUserComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "Net/UnrealNetwork.h"
 
 
 // Sets default values
@@ -55,6 +56,13 @@ void ANPCCharacter::BeginPlay()
 
 	if (IsValid(ASC))
 		ASC->InitAbilityActorInfo(this, this);
+}
+
+void ANPCCharacter::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ANPCCharacter, SOClaimHandle);
 }
 
 void ANPCCharacter::OnInteractionBegin(const FSmartObjectClaimHandle ClaimHandle, AActor* InteracteeActor)

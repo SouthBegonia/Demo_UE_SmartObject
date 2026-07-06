@@ -5,6 +5,7 @@
 #include "SmartObjectComponent.h"
 #include "SmartObjectRenderingComponent.h"
 #include "Components/BillboardComponent.h"
+#include "Net/UnrealNetwork.h"
 
 #if WITH_EDITOR
 #include "ObjectEditorUtils.h"
@@ -13,6 +14,9 @@
 ASmartObjectActorBase::ASmartObjectActorBase(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
+	bReplicates = true;
+	SetReplicatingMovement(true);
+
 	Root = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
 	RootComponent = Root;
 
@@ -98,6 +102,11 @@ void ASmartObjectActorBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
 		SOComponent->GetOnSmartObjectEventNative().Remove(ReceiveSmartObjectEventDelegateHandle);
 	}
 	Super::EndPlay(EndPlayReason);
+}
+
+void ASmartObjectActorBase::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 }
 
 void ASmartObjectActorBase::SetSmartObjectEnabled(const bool bEnabled)
