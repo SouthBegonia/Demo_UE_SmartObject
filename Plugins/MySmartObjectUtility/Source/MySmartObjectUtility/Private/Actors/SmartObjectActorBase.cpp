@@ -4,6 +4,7 @@
 
 #include "SmartObjectComponent.h"
 #include "SmartObjectRenderingComponent.h"
+#include "SmartObjectSubsystem.h"
 #include "Components/BillboardComponent.h"
 
 #if WITH_EDITOR
@@ -65,33 +66,15 @@ ASmartObjectActorBase::ASmartObjectActorBase(const FObjectInitializer& ObjectIni
 #endif // WITH_EDITORONLY_DATA
 }
 
-#if WITH_EDITOR
-void ASmartObjectActorBase::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
-{
-	static const FName SmartObjectName = FName(TEXT("SmartObject"));
-
-	Super::PostEditChangeProperty(PropertyChangedEvent);
-
-	if (PropertyChangedEvent.Property)
-	{
-		if (FObjectEditorUtils::GetCategoryFName(PropertyChangedEvent.Property) == SmartObjectName)
-		{
-			if (RenderingComponent)
-			{
-				MarkComponentsRenderStateDirty();
-			}
-		}
-	}
-}
-#endif // WITH_EDITOR
-
-
 // Called when the game starts or when spawned
 void ASmartObjectActorBase::BeginPlay()
 {
 	ReceiveSmartObjectEventDelegateHandle = SOComponent->GetOnSmartObjectEventNative().AddUObject(this, &ASmartObjectActorBase::OnReceiveNativeSmartObjectEvent);
 
 	Super::BeginPlay();
+
+	if (SOComponent->IsSmartObjectEnabled() != bEnableSmartObjectOnBeginPlay)
+		SOComponent->SetSmartObjectEnabled(bEnableSmartObjectOnBeginPlay);
 }
 
 void ASmartObjectActorBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -108,10 +91,13 @@ void ASmartObjectActorBase::GetLifetimeReplicatedProps(TArray<class FLifetimePro
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 }
 
-void ASmartObjectActorBase::SetSmartObjectEnabled(const bool bEnabled)
+
+void ASmartObjectActorBase::UpdateSmartObjectTransform()
 {
-	if (!SOComponent->SetSmartObjectEnabled(bEnabled))
-		UE_LOG(LogTemp, Warning, TEXT("Failed to enable/disable SmartObject = %s"), *GetName());
+	if (USmartObjectSubsystem* Subsystem = USmartObjectSubsystem::GetCurrent(GetWorld()))
+	{
+		Subsystem->UpdateSmartObjectTransform(SOComponent->GetRegisteredHandle(), GetActorTransform());
+	}
 }
 
 
@@ -134,3 +120,25 @@ void ASmartObjectActorBase::OnReceiveNativeSmartObjectEvent(const FSmartObjectEv
 {
 	K2_OnReceiveSmartObjectEvent(EventData, Interactor);
 }
+
+
+#if WITH_EDITOR
+
+void ASmartObjectActorBase::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
+{
+	static const FName SmartObjectName = FName(TEXT("SmartObject"));
+
+	Super::PostEditChangeProperty(PropertyChangedEvent);
+
+	if (PropertyChangedEvent.Property)
+	{
+		if (FObjectEditorUtils::GetCategoryFName(PropertyChangedEvent.Property) == SmartObjectName)
+		{
+			if (RenderingComponent)
+			{
+				MarkComponentsRenderStateDirty();
+			}
+		}
+	}
+}
+#endif // WITH_EDITOR

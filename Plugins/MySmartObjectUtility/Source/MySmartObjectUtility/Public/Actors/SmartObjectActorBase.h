@@ -28,8 +28,13 @@ class MYSMARTOBJECTUTILITY_API ASmartObjectActorBase : public AActor, public ISm
 public:
 	ASmartObjectActorBase(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
-	UFUNCTION(BlueprintCallable, Category = "SmartObject")
-	void SetSmartObjectEnabled(const bool bEnabled);
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SmartObjectActorBase")
+	bool bEnableSmartObjectOnBeginPlay = true;
+
+	/* Must be called if the transform of SmartObject changed. */
+	UFUNCTION(BlueprintCallable, Category = "SmartObjectActorBase")
+	void UpdateSmartObjectTransform();
+
 
 #if WITH_EDITOR
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
