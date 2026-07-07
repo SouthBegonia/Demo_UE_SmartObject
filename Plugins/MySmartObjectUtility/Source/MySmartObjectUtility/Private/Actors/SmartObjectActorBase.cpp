@@ -5,7 +5,6 @@
 #include "SmartObjectComponent.h"
 #include "SmartObjectRenderingComponent.h"
 #include "Components/BillboardComponent.h"
-#include "Net/UnrealNetwork.h"
 
 #if WITH_EDITOR
 #include "ObjectEditorUtils.h"
@@ -90,9 +89,9 @@ void ASmartObjectActorBase::PostEditChangeProperty(FPropertyChangedEvent& Proper
 // Called when the game starts or when spawned
 void ASmartObjectActorBase::BeginPlay()
 {
-	Super::BeginPlay();
-
 	ReceiveSmartObjectEventDelegateHandle = SOComponent->GetOnSmartObjectEventNative().AddUObject(this, &ASmartObjectActorBase::OnReceiveNativeSmartObjectEvent);
+
+	Super::BeginPlay();
 }
 
 void ASmartObjectActorBase::EndPlay(const EEndPlayReason::Type EndPlayReason)

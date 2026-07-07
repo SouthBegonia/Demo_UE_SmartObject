@@ -26,7 +26,7 @@ class MYSMARTOBJECTUTILITY_API ASmartObjectActorBase : public AActor, public ISm
 	GENERATED_BODY()
 
 public:
-	ASmartObjectActorBase(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());;
+	ASmartObjectActorBase(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
 	UFUNCTION(BlueprintCallable, Category = "SmartObject")
 	void SetSmartObjectEnabled(const bool bEnabled);
@@ -34,11 +34,6 @@ public:
 #if WITH_EDITOR
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
 
-	UFUNCTION(CallInEditor, Category = SmartObject, meta = (DisplayName = "Enable SmartObject"))
-	FORCEINLINE void EnableSmartObject() { SetSmartObjectEnabled(true); }
-
-	UFUNCTION(CallInEditor, Category = SmartObject, meta = (DisplayName = "Disable SmartObject"))
-	FORCEINLINE void DisableSmartObject() { SetSmartObjectEnabled(false); }
 #endif // WITH_EDITOR
 
 protected:
