@@ -10,7 +10,7 @@
 class USmartObjectComponent;
 
 // This class does not need to be modified.
-UINTERFACE(BlueprintType)
+UINTERFACE(MinimalAPI, BlueprintType)
 class USmartObjectInteracteeInterface : public UInterface
 {
 	GENERATED_BODY()

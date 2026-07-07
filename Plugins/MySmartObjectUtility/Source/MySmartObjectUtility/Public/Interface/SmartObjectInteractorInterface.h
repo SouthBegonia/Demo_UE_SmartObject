@@ -8,7 +8,7 @@
 #include "SmartObjectInteractorInterface.generated.h"
 
 // This class does not need to be modified.
-UINTERFACE(BlueprintType)
+UINTERFACE(MinimalAPI, BlueprintType)
 class USmartObjectInteractorInterface : public UInterface
 {
 	GENERATED_BODY()
