@@ -52,15 +52,6 @@ EBTNodeResult::Type UBTTask_MoveAndUseSmartObject::ExecuteTask(UBehaviorTreeComp
 	}
 	FVector GoalLocation = GoalTransform.GetLocation();
 
-	// Set MotionWarping
-	if (!SlotMotionWarpingName.IsNone())
-	{
-		UMotionWarpingComponent* MotionWarpingComp = MyController->GetPawn()->GetComponentByClass<UMotionWarpingComponent>();
-
-		if (MotionWarpingComp != nullptr)
-			MotionWarpingComp->AddOrUpdateWarpTargetFromTransform(SlotMotionWarpingName, GoalTransform);
-	}
-
 	// Register SlotInvalidationEvent
 	SmartObjectSubsystem->RegisterSlotInvalidationCallback(ClaimedHandle, FOnSlotInvalidated::CreateUObject(this, &UBTTask_MoveAndUseSmartObject::OnSlotInvalidated));
 	// Register SmartObjectEvent

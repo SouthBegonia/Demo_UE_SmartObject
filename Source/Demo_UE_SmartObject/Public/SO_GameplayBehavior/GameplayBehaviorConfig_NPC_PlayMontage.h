@@ -24,6 +24,7 @@ public:
 	float GetPlayRate() const { return PlayRate; }
 	FName GetStartSectionName() const { return StartSectionName; }
 	bool IsLooped() const { return (bLoop != 0); }
+	FName GetSlotMotionWarpingName() const { return SlotMotionWarpingName; }
 
 protected:
 	UPROPERTY(EditAnywhere, Category = SmartObject, meta=(ShortTooltip = "The single montage will be played"))
@@ -41,6 +42,8 @@ protected:
 	UPROPERTY(EditAnywhere, Category = SmartObject)
 	uint32 bLoop : 1;
 
+	UPROPERTY(EditAnywhere, Category = SmartObject, meta=(ToolTip = "Warping Pawn to SlotTransform"))
+	FName SlotMotionWarpingName = TEXT("SmartObjectWarp");
 
 	UPROPERTY()
 	mutable TObjectPtr<UAnimMontage> TargetAnimMontage;

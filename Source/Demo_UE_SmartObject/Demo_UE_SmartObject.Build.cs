@@ -17,6 +17,7 @@ public class Demo_UE_SmartObject : ModuleRules
 			"StateTreeModule", "GameplayStateTreeModule",
 			"MotionWarping", "GameplayAbilities", "GameplayTags", "NavigationSystem",
 
+			"MySmartObjectUtility"
 		});
 
 		PrivateDependencyModuleNames.AddRange(new string[] { });

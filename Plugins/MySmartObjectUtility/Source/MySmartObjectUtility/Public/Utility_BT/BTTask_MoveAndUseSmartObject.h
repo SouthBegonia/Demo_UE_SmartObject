@@ -45,9 +45,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="SmartObject")
 	TEnumAsByte<EGoalLocationTypeForMoveAndUseSmartObjectTask> GoalLocationType;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="SmartObject", meta=(ToolTip = "Warping Pawn to SlotTransform"))
-	FName SlotMotionWarpingName = TEXT("SmartObjectWarp");
-
 protected:
 	UPROPERTY()
 	TObjectPtr<class UAITask_MoveTo> MoveToTask;

@@ -6,7 +6,7 @@
 
 bool USmartObjectBlueprintFunctionLibraryEx::GetSlotTransformWithSlotHandle(UObject* WorldContextObject, FTransform& OutSlotTransform, const FSmartObjectSlotHandle& SlotHandle)
 {
-             	USmartObjectSubsystem* SmartObjectSubsystem = USmartObjectSubsystem::GetCurrent(WorldContextObject->GetWorld());
+    USmartObjectSubsystem* SmartObjectSubsystem = USmartObjectSubsystem::GetCurrent(WorldContextObject->GetWorld());
 	if (SmartObjectSubsystem == nullptr)
 	{
 		UE_LOGFMT(LogTemp, Warning, "[{FUNC}] : SmartObjectSubsystem is invalid.", __FUNCTION__);

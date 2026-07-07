@@ -54,15 +54,6 @@ EStateTreeRunStatus FSTTask_MoveAndUseSmartObject::EnterState(FStateTreeExecutio
 	if (AIPawn->Implements<USmartObjectInteractorInterface>())
 		Cast<ISmartObjectInteractorInterface>(AIPawn)->SetSOClaimHandle(SOClaimHandle);
 
-	// Set MotionWarping
-	if (!InstanceData.SlotMotionWarpingName.IsNone())
-	{
-		UMotionWarpingComponent* MotionWarpingComp = InstanceData.AIController->GetPawn()->GetComponentByClass<UMotionWarpingComponent>();
-
-		if (MotionWarpingComp != nullptr)
-			MotionWarpingComp->AddOrUpdateWarpTargetFromTransform(InstanceData.SlotMotionWarpingName, InstanceData.SOGoalTransform);
-	}
-
 	// Register SlotInvalidationEvent
 	// TODO : switch to a MulticastDelegate instead of OnSlotInvalidatedDelegate(Delegate)
 	SmartObjectSubsystem->RegisterSlotInvalidationCallback(SOClaimHandle, FOnSlotInvalidated::CreateLambda([InstanceDataRef = Context.GetInstanceDataStructRef(*this)](const FSmartObjectClaimHandle& InnerSOClaimHandle, ESmartObjectSlotState InnerSlotState)

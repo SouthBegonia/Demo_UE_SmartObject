@@ -68,10 +68,6 @@ struct FStateTreeMoveAndUseSmartObjectInstanceData
 	UPROPERTY(EditAnywhere, Category = Parameter)
 	bool bReachTestIncludesGoalRadius = GET_AI_CONFIG_VAR(bFinishMoveOnGoalOverlap);
 
-
-	UPROPERTY(EditAnywhere, Category = Parameter, meta=(ToolTip = "Warping Pawn to SlotTransform"))
-	FName SlotMotionWarpingName = TEXT("SmartObjectWarp");
-
 	#pragma endregion
 
 

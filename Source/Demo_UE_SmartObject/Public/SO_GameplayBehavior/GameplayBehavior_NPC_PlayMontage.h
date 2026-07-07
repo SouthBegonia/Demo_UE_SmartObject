@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameplayBehavior_AnimationBased.h"
+#include "SmartObjectTypes.h"
 #include "GameplayBehavior_NPC_PlayMontage.generated.h"
 
 /**
@@ -25,4 +26,7 @@ public:
 protected:
 	UFUNCTION()
 	void OnMontageFinishedNew(UAnimMontage* Montage, bool bInterrupted, AActor* InAvatar);
+
+	UFUNCTION(BlueprintCallable, meta=(AdvancedDisplay="SlotHandle"))
+	void AddOrUpdateWarpTargetToSlot(AActor* Avatar, FName SlotMotionWarpingName, FSmartObjectSlotHandle SlotHandle = FSmartObjectSlotHandle());
 };

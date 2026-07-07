@@ -2,10 +2,14 @@
 
 
 #include "Demo_UE_SmartObject/Public/SO_GameplayBehavior/GameplayBehavior_NPC_PlayMontage.h"
-
+#include "Demo_UE_SmartObject/Public/SO_GameplayBehavior/GameplayBehaviorConfig_NPC_PlayMontage.h"
 #include "AbilitySystemComponent.h"
 #include "GameplayAbilitySpec.h"
-#include "Demo_UE_SmartObject/Public/SO_GameplayBehavior/GameplayBehaviorConfig_NPC_PlayMontage.h"
+#include "MotionWarpingComponent.h"
+#include "SmartObjectSubsystem.h"
+#include "Interface/SmartObjectInteractorInterface.h"
+#include "Logging/StructuredLog.h"
+#include "Utility/SmartObjectBlueprintFunctionLibraryEx.h"
 
 UGameplayBehavior_NPC_PlayMontage::UGameplayBehavior_NPC_PlayMontage(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -23,6 +27,9 @@ bool UGameplayBehavior_NPC_PlayMontage::Trigger(AActor& InAvatar, const UGamepla
 			, *InAvatar.GetName(), AnimConfig ? TEXT("Config->Montage") : TEXT("Config"));
 		return false;
 	}
+
+	//Add MotionWarping
+	AddOrUpdateWarpTargetToSlot(&InAvatar, AnimConfig->GetSlotMotionWarpingName());
 
 	/*
 	 * The version of UGameplayBehavior_AnimationBased::Trigger()
@@ -120,5 +127,49 @@ void UGameplayBehavior_NPC_PlayMontage::OnMontageFinishedNew(UAnimMontage* Monta
 				}
 			}
 		}
+	}
+}
+
+void UGameplayBehavior_NPC_PlayMontage::AddOrUpdateWarpTargetToSlot(AActor* Avatar, FName SlotMotionWarpingName, FSmartObjectSlotHandle SlotHandle)
+{
+	check(!SlotMotionWarpingName.IsNone())
+
+	if (Avatar == nullptr)
+	{
+		UE_LOGFMT(LogTemp, Warning, "[{FUNC}] : InAvatar is nullptr.", __FUNCTION__);
+		return;
+	}
+
+	// Operate SlotHandle
+	if (!SlotHandle.IsValid())
+	{
+		// Try getting SlotHandle from SOClaimHandle if it's invalid.
+		if (Avatar->Implements<USmartObjectInteractorInterface>())
+		{
+			ISmartObjectInteractorInterface* InteractorInterface = Cast<ISmartObjectInteractorInterface>(Avatar);
+			FSmartObjectClaimHandle SOClaimHandle = InteractorInterface->GetSOClaimHandle();
+
+			SlotHandle = SOClaimHandle.SlotHandle;
+		}
+	}
+
+	// Get SlotTransform
+	FTransform SlotTransform;
+	if (!USmartObjectBlueprintFunctionLibraryEx::GetSlotTransformWithSlotHandle(Avatar, SlotTransform, SlotHandle))
+	{
+		UE_LOGFMT(LogTemp, Warning, "[{FUNC}] : failed to get slotTransform.", __FUNCTION__);
+		return;
+	}
+
+	// Update motion Warping
+	UMotionWarpingComponent* MotionWarpingComp = Avatar->FindComponentByClass<UMotionWarpingComponent>();
+	if (MotionWarpingComp == nullptr)
+	{
+		UE_LOGFMT(LogTemp, Warning, "[{FUNC}] : failed to find UMotionWarpingComponent in {obj}.", __FUNCTION__, Avatar->GetName());
+		return;
+	}
+	else
+	{
+		MotionWarpingComp->AddOrUpdateWarpTargetFromTransform(SlotMotionWarpingName, SlotTransform);
 	}
 }
