@@ -34,26 +34,25 @@ class MYSMARTOBJECTUTILITY_API UBTTask_FindSmartObject : public UBTTaskNode
 {
 	GENERATED_BODY()
 
-public:
 	UBTTask_FindSmartObject();
 
-protected:
+public:
 	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 	virtual EBTNodeResult::Type AbortTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
-	virtual void OnTaskFinished(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, EBTNodeResult::Type TaskResult) override;
-	virtual uint16 GetInstanceMemorySize() const override { return sizeof(FBTQuerySOMemory); }
+	virtual uint16 GetInstanceMemorySize() const override;
 	virtual void InitializeMemory(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, EBTMemoryInit::Type InitType) const override;
 	virtual void CleanupMemory(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, EBTMemoryClear::Type CleanupType) const override;
-
 	virtual FString GetStaticDescription() const override;
-
 	virtual void InitializeFromAsset(UBehaviorTree& Asset) override;
 
-	void OnQueryFinished(TSharedPtr<FEnvQueryResult> Result);
 protected:
+	virtual void OnTaskFinished(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, EBTNodeResult::Type TaskResult) override;
 
-	UPROPERTY(EditAnywhere, Category = SmartObjects)
-	FBlackboardKeySelector SOClaimHandleKey;
+	void OnQueryFinished(TSharedPtr<FEnvQueryResult> Result);
+
+
+	UPROPERTY(EditAnywhere, Category = SmartObjects, meta=(NoResetToDefault))
+	FBlackboardKeySelector SOClaimHandleBlackboardKey;
 
 	/** Additional tag query to filter available smart objects. We'll query for smart
 	 *	objects that support activities tagged in a way matching the filter.

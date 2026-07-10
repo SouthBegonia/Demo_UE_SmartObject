@@ -27,16 +27,19 @@ class MYSMARTOBJECTUTILITY_API UBTTask_MoveAndUseSmartObject : public UBTTask_Bl
 {
 	GENERATED_BODY()
 
-	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
-	virtual EBTNodeResult::Type AbortTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
-	virtual void OnTaskFinished(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, EBTNodeResult::Type TaskResult) override;
-
-	virtual FString GetStaticDescription() const override;
-
-	virtual void OnGameplayTaskDeactivated(UGameplayTask& Task) override;
+	UBTTask_MoveAndUseSmartObject();
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="SmartObject")
+	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
+	virtual EBTNodeResult::Type AbortTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
+	virtual FString GetStaticDescription() const override;
+	virtual void OnGameplayTaskDeactivated(UGameplayTask& Task) override;
+
+protected:
+	virtual void OnTaskFinished(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, EBTNodeResult::Type TaskResult) override;
+
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="SmartObject", meta=(NoResetToDefault))
 	FBlackboardKeySelector SOClaimHandleBlackboardKey;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="SmartObject")
@@ -45,7 +48,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="SmartObject")
 	TEnumAsByte<EGoalLocationTypeForMoveAndUseSmartObjectTask> GoalLocationType;
 
-protected:
+
 	UPROPERTY()
 	TObjectPtr<class UAITask_MoveTo> MoveToTask;
 

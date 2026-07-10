@@ -21,16 +21,12 @@ UBTTask_FindSmartObject::UBTTask_FindSmartObject()
 	EQSQueryFinishedDelegate = FQueryFinishedSignature::CreateUObject(this, &UBTTask_FindSmartObject::OnQueryFinished);
 	EQSRequest.RunMode = EEnvQueryRunMode::AllMatching;
 	bNotifyTaskFinished = true;
-}
 
-void UBTTask_FindSmartObject::InitializeMemory(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, EBTMemoryInit::Type InitType) const
-{
-	InitializeNodeMemory<FBTQuerySOMemory>(NodeMemory, InitType);
-}
-
-void UBTTask_FindSmartObject::CleanupMemory(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, EBTMemoryClear::Type CleanupType) const
-{
-	CleanupNodeMemory<FBTQuerySOMemory>(NodeMemory, CleanupType);
+	// accept only UBlackboardKeyType_SOClaimHandle
+	const FName PropertyName = GET_MEMBER_NAME_CHECKED(UBTTask_FindSmartObject, SOClaimHandleBlackboardKey);
+	const FString FilterName = PropertyName.ToString() + TEXT("_SOClaimHandle");
+	SOClaimHandleBlackboardKey.AllowedTypes.Add(NewObject<UBlackboardKeyType_SOClaimHandle>(this, *FilterName));
+	SOClaimHandleBlackboardKey.AllowNoneAsValue(false);
 }
 
 EBTNodeResult::Type UBTTask_FindSmartObject::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
@@ -107,10 +103,10 @@ EBTNodeResult::Type UBTTask_FindSmartObject::ExecuteTask(UBehaviorTreeComponent&
 				FSmartObjectClaimHandle ClaimHandle = SmartObjectSubsystem->MarkSlotAsClaimed(Result.SlotHandle, ClaimPriority, ActorUserDataView);
 				if (ClaimHandle.IsValid())
 				{
-					OwnerComp.GetBlackboardComponent()->SetValue<UBlackboardKeyType_SOClaimHandle>(SOClaimHandleKey.SelectedKeyName, ClaimHandle);
+					OwnerComp.GetBlackboardComponent()->SetValue<UBlackboardKeyType_SOClaimHandle>(SOClaimHandleBlackboardKey.SelectedKeyName, ClaimHandle);
 
 					if (Avatar.Implements<USmartObjectInteractorInterface>())
-						Cast<ISmartObjectInteractorInterface>(&Avatar)->SetSOClaimHandle(ClaimHandle, SOClaimHandleKey.SelectedKeyName);
+						Cast<ISmartObjectInteractorInterface>(&Avatar)->SetSOClaimHandle(ClaimHandle, SOClaimHandleBlackboardKey.SelectedKeyName);
 
 					NodeResult = EBTNodeResult::Succeeded;
 					break;
@@ -157,26 +153,38 @@ void UBTTask_FindSmartObject::OnTaskFinished(UBehaviorTreeComponent& OwnerComp, 
 	check(MyMemory->EQSRequestID == INDEX_NONE);
 }
 
+uint16 UBTTask_FindSmartObject::GetInstanceMemorySize() const
+{
+	return sizeof(FBTQuerySOMemory);
+}
+
+void UBTTask_FindSmartObject::InitializeMemory(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, EBTMemoryInit::Type InitType) const
+{
+	InitializeNodeMemory<FBTQuerySOMemory>(NodeMemory, InitType);
+}
+
+void UBTTask_FindSmartObject::CleanupMemory(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, EBTMemoryClear::Type CleanupType) const
+{
+	CleanupNodeMemory<FBTQuerySOMemory>(NodeMemory, CleanupType);
+}
+
+
 FString UBTTask_FindSmartObject::GetStaticDescription() const
 {
-	FString Result;
-	if (SOClaimHandleKey.SelectedKeyType != UBlackboardKeyType_SOClaimHandle::StaticClass())
+	if (!SOClaimHandleBlackboardKey.IsSet())
 	{
-		Result += FString::Printf(TEXT("SOClaimHandleKey must be type of SOClaimHandle"));
+		return FString::Printf(TEXT("SOClaimHandleKey must be setting with type of SOClaimHandle."));
 	}
 
-	if (ActivityRequirements.IsEmpty() == false)
+	FString Result;
+	Result += FString::Printf(TEXT("Result in BBKey: %s"), *SOClaimHandleBlackboardKey.SelectedKeyName.ToString());
+	if (!ActivityRequirements.IsEmpty())
 	{
-		Result += FString::Printf(TEXT("Object requirements: %s")
+		Result += FString::Printf(TEXT("\nSO requirements: %s")
 			, *ActivityRequirements.GetDescription());
 	}
 
-	if (Result.Len() > 0)
-		return Result;
-
-	FString KeyDesc = SOClaimHandleKey.SelectedKeyName.ToString();
-
-	return FString::Printf(TEXT("Result ClaimedHandle in BBKey : %s"), *KeyDesc);
+	return Result;
 }
 
 void UBTTask_FindSmartObject::InitializeFromAsset(UBehaviorTree& Asset)
@@ -256,12 +264,12 @@ void UBTTask_FindSmartObject::OnQueryFinished(TSharedPtr<FEnvQueryResult> Result
 				const FSmartObjectClaimHandle ClaimHandle = SmartObjectSubsystem->MarkSlotAsClaimed(Item.SlotHandle, ClaimPriority, ActorUserDataView);
 				if (ClaimHandle.IsValid())
 				{
-					BTComponent->GetBlackboardComponent()->SetValue<UBlackboardKeyType_SOClaimHandle>(SOClaimHandleKey.SelectedKeyName, ClaimHandle);
+					BTComponent->GetBlackboardComponent()->SetValue<UBlackboardKeyType_SOClaimHandle>(SOClaimHandleBlackboardKey.SelectedKeyName, ClaimHandle);
 					bSmartObjectClaimed = true;
 
 					AActor* Avatar = Cast<AActor>(Result->Owner.Get());
 					if (Avatar && Avatar->Implements<USmartObjectInteractorInterface>())
-						Cast<ISmartObjectInteractorInterface>(Avatar)->SetSOClaimHandle(ClaimHandle, SOClaimHandleKey.SelectedKeyName);
+						Cast<ISmartObjectInteractorInterface>(Avatar)->SetSOClaimHandle(ClaimHandle, SOClaimHandleBlackboardKey.SelectedKeyName);
 
 
 					UE_VLOG_UELOG(BTComponent, LogSmartObject, Verbose, TEXT("%s claimed EQS-found smart object: %s"), *GetNodeName(), *LexToString(ClaimHandle));

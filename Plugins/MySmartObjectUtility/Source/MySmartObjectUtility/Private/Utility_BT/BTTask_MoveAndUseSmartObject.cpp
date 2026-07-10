@@ -14,10 +14,17 @@
 #include "GameplayBehaviorConfig.h"
 #include "GameplayBehaviorSubsystem.h"
 #include "GameplayBehaviorSmartObjectBehaviorDefinition.h"
-#include "MotionWarpingComponent.h"
 #include "Interface/SmartObjectInteracteeInterface.h"
 #include "Interface/SmartObjectInteractorInterface.h"
 
+UBTTask_MoveAndUseSmartObject::UBTTask_MoveAndUseSmartObject()
+{
+	// accept only UBlackboardKeyType_SOClaimHandle
+	const FName PropertyName = GET_MEMBER_NAME_CHECKED(UBTTask_MoveAndUseSmartObject, SOClaimHandleBlackboardKey);
+	const FString FilterName = PropertyName.ToString() + TEXT("_SOClaimHandle");
+	SOClaimHandleBlackboardKey.AllowedTypes.Add(NewObject<UBlackboardKeyType_SOClaimHandle>(this, *FilterName));
+	SOClaimHandleBlackboardKey.AllowNoneAsValue(false);
+}
 
 EBTNodeResult::Type UBTTask_MoveAndUseSmartObject::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {

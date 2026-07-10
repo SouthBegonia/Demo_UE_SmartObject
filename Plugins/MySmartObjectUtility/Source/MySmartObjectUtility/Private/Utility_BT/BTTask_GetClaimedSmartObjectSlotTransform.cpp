@@ -7,6 +7,20 @@
 #include "BlackboardKeyType_SOClaimHandle.h"
 #include "BehaviorTree/BlackboardComponent.h"
 
+UBTTask_GetClaimedSmartObjectSlotTransform::UBTTask_GetClaimedSmartObjectSlotTransform()
+{
+	// accept only UBlackboardKeyType_SOClaimHandle
+	const FName PropertyName = GET_MEMBER_NAME_CHECKED(UBTTask_GetClaimedSmartObjectSlotTransform, SOClaimHandleBlackboardKey);
+	const FString FilterName = PropertyName.ToString() + TEXT("_SOClaimHandle");
+	SOClaimHandleBlackboardKey.AllowedTypes.Add(NewObject<UBlackboardKeyType_SOClaimHandle>(this, *FilterName));
+	SOClaimHandleBlackboardKey.AllowNoneAsValue(false);
+
+	ResultLocationBlackboardKey.AddVectorFilter(this, GET_MEMBER_NAME_CHECKED(UBTTask_GetClaimedSmartObjectSlotTransform, ResultLocationBlackboardKey));
+	ResultLocationBlackboardKey.AllowNoneAsValue(true);
+	ResultRotatorBlackboardKey.AddRotatorFilter(this, GET_MEMBER_NAME_CHECKED(UBTTask_GetClaimedSmartObjectSlotTransform, ResultRotatorBlackboardKey));
+	ResultRotatorBlackboardKey.AllowNoneAsValue(true);
+}
+
 EBTNodeResult::Type UBTTask_GetClaimedSmartObjectSlotTransform::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
 	UWorld* World = GetWorld();
@@ -22,7 +36,7 @@ EBTNodeResult::Type UBTTask_GetClaimedSmartObjectSlotTransform::ExecuteTask(UBeh
 
 	// Check ClaimHandle is valid.
 	FSmartObjectClaimHandle ClaimHandle;
-	GetSOClaimHandle(OwnerComp, SOClaimedHandleBlackboardKey, ClaimHandle);
+	GetSOClaimHandle(OwnerComp, SOClaimHandleBlackboardKey, ClaimHandle);
 	if (!IsClaimedSmartObjectValid(OwnerComp, ClaimHandle))
 	{
 		return EBTNodeResult::Failed;
@@ -46,10 +60,10 @@ EBTNodeResult::Type UBTTask_GetClaimedSmartObjectSlotTransform::ExecuteTask(UBeh
 
 	if (bHasResult)
 	{
-		if (!ResultLocationKeyName.IsNone())
-			BlackboardComp->SetValueAsVector(ResultLocationKeyName, TargetTransform.GetLocation());
-		if (!ResultRotatorKeyName.IsNone())
-			BlackboardComp->SetValueAsRotator(ResultRotatorKeyName, TargetTransform.GetRotation().Rotator());
+		if (ResultLocationBlackboardKey.IsSet())
+			BlackboardComp->SetValueAsVector(ResultLocationBlackboardKey.SelectedKeyName, TargetTransform.GetLocation());
+		if (ResultRotatorBlackboardKey.IsSet())
+			BlackboardComp->SetValueAsRotator(ResultRotatorBlackboardKey.SelectedKeyName, TargetTransform.GetRotation().Rotator());
 	}
 
 	return bHasResult ? EBTNodeResult::Succeeded : EBTNodeResult::Failed;
@@ -111,25 +125,24 @@ bool UBTTask_GetClaimedSmartObjectSlotTransform::IsClaimedSmartObjectValid(const
 
 FString UBTTask_GetClaimedSmartObjectSlotTransform::GetStaticDescription() const
 {
+	if (!SOClaimHandleBlackboardKey.IsSet())
+	{
+		return FString::Printf(TEXT("SOClaimedHandleBlackboardKey must be setting with type of SOClaimHandle."));
+	}
+
+	if (ResultLocationBlackboardKey.IsNone() && ResultRotatorBlackboardKey.IsNone())
+	{
+		return FString::Printf(TEXT("ResultLocationBlackboardKey or ResultRotatorBlackboardKey can't be none both."));
+	}
+
 	FString Result;
-	if (SOClaimedHandleBlackboardKey.SelectedKeyType != UBlackboardKeyType_SOClaimHandle::StaticClass())
-	{
-		Result += FString::Printf(TEXT("SOClaimedHandleBlackboardKey must be type of SOClaimHandle"));
-	}
-
-	if (ResultLocationKeyName.IsNone() && ResultRotatorKeyName.IsNone())
-	{
-		Result += FString::Printf(TEXT("ResultLocationKeyName or ResultRotatorKeyName can't be none"));
-	}
-
-	if (Result.Len() > 0)
-		return Result;
 
 	Result += FString(TEXT("Result in BBKey : "));
-	if (!ResultLocationKeyName.IsNone())
-		Result += FString::Printf(TEXT(" %s "), *ResultLocationKeyName.ToString());
-	if (!ResultRotatorKeyName.IsNone())
-		Result += FString::Printf(TEXT(" %s "), *ResultRotatorKeyName.ToString());
+	if (!ResultLocationBlackboardKey.IsNone())
+		Result += FString::Printf(TEXT(" %s "), *ResultLocationBlackboardKey.SelectedKeyName.ToString());
+	if (!ResultRotatorBlackboardKey.IsNone())
+		Result += FString::Printf(TEXT(" %s "), *ResultRotatorBlackboardKey.SelectedKeyName.ToString());
+	Result += FString::Printf(TEXT("\nSO ClaimHandle: %s"), *SOClaimHandleBlackboardKey.SelectedKeyName.ToString());
 
     return Result;
 }

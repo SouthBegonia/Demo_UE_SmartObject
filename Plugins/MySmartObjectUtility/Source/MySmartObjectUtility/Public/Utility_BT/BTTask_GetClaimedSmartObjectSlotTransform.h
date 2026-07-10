@@ -15,24 +15,26 @@ class MYSMARTOBJECTUTILITY_API UBTTask_GetClaimedSmartObjectSlotTransform : publ
 {
 	GENERATED_BODY()
 
-	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
+	UBTTask_GetClaimedSmartObjectSlotTransform();
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Blackboard")
-	FBlackboardKeySelector SOClaimedHandleBlackboardKey;
+	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
+	virtual FString GetStaticDescription() const override;
+
+protected:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Blackboard", meta=(NoResetToDefault))
+	FBlackboardKeySelector SOClaimHandleBlackboardKey;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Blackboard")
-	FName ResultLocationKeyName;
+	FBlackboardKeySelector ResultLocationBlackboardKey;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Blackboard")
-	FName ResultRotatorKeyName;
+	FBlackboardKeySelector ResultRotatorBlackboardKey;
 
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="SmartObject")
 	FSmartObjectSlotEntranceLocationRequest EntranceRequest;
 
-	virtual FString GetStaticDescription() const override;
 
-protected:
 	bool GetSOClaimHandle(const UBehaviorTreeComponent& OwnerComp, const FBlackboardKeySelector& ClaimHandleKey, FSmartObjectClaimHandle& OutClaimHandle);
 
 	bool IsClaimedSmartObjectValid(const UBehaviorTreeComponent& OwnerComp, const FSmartObjectClaimHandle& ClaimHandle) const;

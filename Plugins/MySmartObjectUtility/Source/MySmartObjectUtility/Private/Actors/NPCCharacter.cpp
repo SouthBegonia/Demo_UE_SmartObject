@@ -34,6 +34,7 @@ ANPCCharacter::ANPCCharacter()
 
 	// Optimization settings
 	GetMesh()->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::OnlyTickPoseWhenRendered;
+	GetMesh()->bEnableUpdateRateOptimizations = true;
 
 
 	// Core Components
