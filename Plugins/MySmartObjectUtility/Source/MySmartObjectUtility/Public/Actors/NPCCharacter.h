@@ -3,7 +3,9 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "AbilitySystemComponent.h"
 #include "AbilitySystemInterface.h"
+#include "GameplayTagAssetInterface.h"
 #include "GameFramework/Character.h"
 #include "Interface/SmartObjectInteractorInterface.h"
 #include "NPCCharacter.generated.h"
@@ -20,7 +22,7 @@ class USmartObjectUserComponent;
  *
  */
 UCLASS(BlueprintType, meta=(ShortTooltip="A type of Character that includes the ability to interact with SmartObjects."))
-class MYSMARTOBJECTUTILITY_API ANPCCharacter : public ACharacter, public IAbilitySystemInterface, public ISmartObjectInteractorInterface
+class MYSMARTOBJECTUTILITY_API ANPCCharacter : public ACharacter, public IAbilitySystemInterface, public IGameplayTagAssetInterface, public ISmartObjectInteractorInterface
 {
 	GENERATED_BODY()
 
@@ -34,7 +36,7 @@ protected:
 
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override { return ASC; }
 
-	/* mainly use for PlayMontage (Anim can be replicated, or you could implement by RPC */
+	/* mainly use for GameplayTag and PlayMontage (Anim can be replicated, or you could implement by RPC) */
 	UPROPERTY()
 	TObjectPtr<UAbilitySystemComponent> ASC;
 
@@ -56,6 +58,32 @@ public:
 	virtual void SetSOClaimHandle(const FSmartObjectClaimHandle ClaimHandle, const FName& ClaimHandleBlackboardKeyName = FName()) override;
 	virtual FSmartObjectClaimHandle GetSOClaimHandle(const FName& ClaimHandleBlackboardKeyName = FName()) const override;
 	virtual void InvalidateSOClaimHandle(const FName& ClaimHandleBlackboardKeyName = FName()) override;
+
+	#pragma endregion
+
+	#pragma region IGameplayTagAssetInterface
+
+	FORCEINLINE virtual void GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const override
+	{
+		TagContainer.Reset();
+		if (ASC != nullptr)
+			TagContainer.AppendTags(ASC->GetOwnedGameplayTags());
+	}
+
+	FORCEINLINE virtual bool HasMatchingGameplayTag(FGameplayTag TagToCheck) const override
+	{
+		return ASC ? ASC->HasMatchingGameplayTag(TagToCheck) : false;
+	}
+
+	FORCEINLINE virtual bool HasAllMatchingGameplayTags(const FGameplayTagContainer& TagContainer) const override
+	{
+		return ASC ? ASC->HasAllMatchingGameplayTags(TagContainer) : false;
+	}
+
+	FORCEINLINE virtual bool HasAnyMatchingGameplayTags(const FGameplayTagContainer& TagContainer) const override
+	{
+		return ASC ? ASC->HasAnyMatchingGameplayTags(TagContainer) : false;
+	}
 
 	#pragma endregion
 
