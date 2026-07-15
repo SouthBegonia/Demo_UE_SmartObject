@@ -42,7 +42,38 @@ bool UGameplayBehavior_NPC_PlayMontage::Trigger(AActor& InAvatar, const UGamepla
 	 * The new method is just fix the problem: consider the PlayRate (You can see my remarks easily within the code)
 	 * If you encounter other problems by using the new method, you can replace it with the old one
 	 */
-	return PlayMontageNew(InAvatar, *Anim, AnimConfig->GetPlayRate(), AnimConfig->GetStartSectionName(), AnimConfig->IsLooped());
+	bool bPlaySuccess = PlayMontageNew(InAvatar, *Anim, AnimConfig->GetPlayRate(), AnimConfig->GetStartSectionName(), AnimConfig->IsLooped());
+
+	// Add timer for PlayTime
+	const float PlayTime = AnimConfig->GetPlayTimeWithingRandomDeviation();
+	if (bPlaySuccess && PlayTime > 0.f)
+	{
+		UAbilitySystemComponent* ASC = Cast<UAbilitySystemComponent>(InAvatar.FindComponentByClass(UAbilitySystemComponent::StaticClass()));
+		if (ASC)
+		{
+			if (UWorld* World = InAvatar.GetWorld())
+			{
+				PlayTimerDelegate = FTimerDelegate::CreateUObject(this, &UGameplayBehavior_NPC_PlayMontage::OnPlayTimerFinished, Anim, &InAvatar);
+				World->GetTimerManager().SetTimer(PlayTimerHandle, PlayTimerDelegate, PlayTime, /*bLoop=*/false);
+			}
+		}
+	}
+
+	return bPlaySuccess;
+}
+
+void UGameplayBehavior_NPC_PlayMontage::EndBehavior(AActor& Avatar, const bool bInterrupted)
+{
+	// Clear PlayTime timer
+	if (PlayTimerHandle.IsValid())
+	{
+		if (UWorld* World = Avatar.GetWorld())
+		{
+			World->GetTimerManager().ClearTimer(PlayTimerHandle);
+		}
+	}
+
+	Super::EndBehavior(Avatar, bInterrupted);
 }
 
 bool UGameplayBehavior_NPC_PlayMontage::NeedsInstance(const UGameplayBehaviorConfig* Config) const
@@ -130,9 +161,16 @@ void UGameplayBehavior_NPC_PlayMontage::OnMontageFinishedNew(UAnimMontage* Monta
 	}
 }
 
+void UGameplayBehavior_NPC_PlayMontage::OnPlayTimerFinished(UAnimMontage* Montage, AActor* InAvatar)
+{
+	// Timer of PlayTime finished, regard this situation as an interruption
+	EndBehavior(*InAvatar, true);
+}
+
 void UGameplayBehavior_NPC_PlayMontage::AddOrUpdateWarpTargetToSlot(AActor* Avatar, FName SlotMotionWarpingName, FSmartObjectSlotHandle SlotHandle)
 {
-	check(!SlotMotionWarpingName.IsNone())
+	if (SlotMotionWarpingName.IsNone())
+		return;
 
 	if (Avatar == nullptr)
 	{
@@ -151,6 +189,11 @@ void UGameplayBehavior_NPC_PlayMontage::AddOrUpdateWarpTargetToSlot(AActor* Avat
 
 			SlotHandle = SOClaimHandle.SlotHandle;
 		}
+	}
+	if (!SlotHandle.IsValid())
+	{
+		UE_LOGFMT(LogTemp, Warning, "[{FUNC}] : SlotHandle is invalid.", __FUNCTION__);
+		return;
 	}
 
 	// Get SlotTransform

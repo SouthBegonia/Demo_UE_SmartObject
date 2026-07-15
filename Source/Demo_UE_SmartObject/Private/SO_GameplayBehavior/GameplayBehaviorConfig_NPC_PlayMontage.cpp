@@ -36,7 +36,21 @@ UAnimMontage* UGameplayBehaviorConfig_NPC_PlayMontage::GetMontage() const
 		}
 	}
 
+	// TODO : Record the pointer of AnimMontage(TargetAnimMontage) by GamePlayBehavior
+
 	check(TargetAnimMontage)
 	return TargetAnimMontage;
+}
+
+float UGameplayBehaviorConfig_NPC_PlayMontage::GetPlayTimeWithingRandomDeviation() const
+{
+	if (PlayTime <= 0.f)
+		return 0.f;
+
+	if (PlayTimeRandomDeviation <= 0.f)
+		return PlayTime;
+
+	const float RandomDeviation = FMath::RandRange(-PlayTimeRandomDeviation, PlayTimeRandomDeviation);
+	return FMath::Max(0.f, PlayTime + RandomDeviation);
 }
 

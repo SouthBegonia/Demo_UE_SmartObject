@@ -19,6 +19,7 @@ public:
 	UGameplayBehavior_NPC_PlayMontage(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
 	virtual bool Trigger(AActor& InAvatar, const UGameplayBehaviorConfig* Config = nullptr, AActor* SmartObjectOwner = nullptr) override;
+	virtual void EndBehavior(AActor& Avatar, const bool bInterrupted = false) override;
 	virtual bool NeedsInstance(const UGameplayBehaviorConfig* Config) const override;
 
 	bool PlayMontageNew(AActor& InAvatar, UAnimMontage& AnimMontage, const float InPlayRate = 1.f, const FName StartSectionName = NAME_None, const bool bLoop = false);
@@ -27,6 +28,13 @@ protected:
 	UFUNCTION()
 	void OnMontageFinishedNew(UAnimMontage* Montage, bool bInterrupted, AActor* InAvatar);
 
+	UFUNCTION()
+	void OnPlayTimerFinished(UAnimMontage* Montage, AActor* InAvatar);
+
 	UFUNCTION(BlueprintCallable, meta=(AdvancedDisplay="SlotHandle"))
 	void AddOrUpdateWarpTargetToSlot(AActor* Avatar, FName SlotMotionWarpingName, FSmartObjectSlotHandle SlotHandle = FSmartObjectSlotHandle());
+
+	/* TimerHandle for UGameplayBehaviorConfig_NPC_PlayMontage.PlayTime (not for Montage PlaybackLength) */
+	FTimerHandle PlayTimerHandle;
+	FTimerDelegate PlayTimerDelegate;
 };

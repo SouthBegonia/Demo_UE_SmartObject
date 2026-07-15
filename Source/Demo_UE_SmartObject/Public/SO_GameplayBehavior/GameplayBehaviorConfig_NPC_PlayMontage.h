@@ -25,6 +25,8 @@ public:
 	FName GetStartSectionName() const { return StartSectionName; }
 	bool IsLooped() const { return (bLoop != 0); }
 	FName GetSlotMotionWarpingName() const { return SlotMotionWarpingName; }
+	float GetPlayTimeWithingRandomDeviation() const;
+
 
 protected:
 	UPROPERTY(EditAnywhere, Category = SmartObject, meta=(ShortTooltip = "The single montage will be played"))
@@ -39,10 +41,16 @@ protected:
 	UPROPERTY(EditAnywhere, Category = SmartObject)
 	FName StartSectionName;
 
-	UPROPERTY(EditAnywhere, Category = SmartObject)
+	UPROPERTY(EditAnywhere, Category = SmartObject, meta=(ToolTip = "If true, the montage will be played in loop until the behavior ended"))
 	uint32 bLoop : 1;
 
-	UPROPERTY(EditAnywhere, Category = SmartObject, meta=(ToolTip = "Warping Pawn to SlotTransform"))
+	UPROPERTY(EditAnywhere, Category = SmartObject, meta=(UIMin = "0.0", ToolTip = "Montage will be played only once if PlatTime is 0.f, otherwise montage will stop after PlatTime seconds.\nUsually recommended for Looping montage (bLoop = true)"))
+	float PlayTime = 0.f;
+
+	UPROPERTY(EditAnywhere, Category = SmartObject, meta = (EditCondition = "PlayTime > 0.0", EditConditionHides, ToolTip = "Random deviation in seconds to add to PlayTime. The final PlayTime will be in the range [PlayTime - PlayTimeRandomDeviation, PlayTime + PlayTimeRandomDeviation]"))
+	float PlayTimeRandomDeviation = 0.f;
+
+	UPROPERTY(EditAnywhere, Category = SmartObject, meta=(ToolTip = "Warping Avatar to SlotTransform.\nRemember to add a motion warpping window for target montage."))
 	FName SlotMotionWarpingName = TEXT("SmartObjectWarp");
 
 	UPROPERTY()
