@@ -32,9 +32,15 @@ protected:
 	void OnPlayTimerFinished(UAnimMontage* Montage, AActor* InAvatar);
 
 	UFUNCTION(BlueprintCallable, meta=(AdvancedDisplay="SlotHandle"))
+	void TeleportAvatarToSlot(AActor* Avatar, FSmartObjectSlotHandle SlotHandle = FSmartObjectSlotHandle());
+
+	UFUNCTION(BlueprintCallable, meta=(AdvancedDisplay="SlotHandle"))
 	void AddOrUpdateWarpTargetToSlot(AActor* Avatar, FName SlotMotionWarpingName, FSmartObjectSlotHandle SlotHandle = FSmartObjectSlotHandle());
 
 	/* TimerHandle for UGameplayBehaviorConfig_NPC_PlayMontage.PlayTime (not for Montage PlaybackLength) */
 	FTimerHandle PlayTimerHandle;
 	FTimerDelegate PlayTimerDelegate;
+
+private:
+	bool GetSlotTransform(FTransform& ResultSloTransform, AActor* Avatar, FSmartObjectSlotHandle SlotHandle = FSmartObjectSlotHandle()) const;
 };

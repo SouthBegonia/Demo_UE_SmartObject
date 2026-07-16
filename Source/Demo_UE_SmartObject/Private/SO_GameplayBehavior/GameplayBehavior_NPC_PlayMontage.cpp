@@ -28,8 +28,11 @@ bool UGameplayBehavior_NPC_PlayMontage::Trigger(AActor& InAvatar, const UGamepla
 		return false;
 	}
 
-	//Add MotionWarping
-	AddOrUpdateWarpTargetToSlot(&InAvatar, AnimConfig->GetSlotMotionWarpingName());
+	// Set Avatar Transform (Teleport directly or Add MotionWarping)
+	if (AnimConfig->IsTeleportAvatarToSlotTransform())
+		TeleportAvatarToSlot(&InAvatar);
+	else if (!AnimConfig->GetSlotMotionWarpingName().IsNone())
+		AddOrUpdateWarpTargetToSlot(&InAvatar, AnimConfig->GetSlotMotionWarpingName());
 
 	/*
 	 * The version of UGameplayBehavior_AnimationBased::Trigger()
@@ -167,6 +170,25 @@ void UGameplayBehavior_NPC_PlayMontage::OnPlayTimerFinished(UAnimMontage* Montag
 	EndBehavior(*InAvatar, true);
 }
 
+void UGameplayBehavior_NPC_PlayMontage::TeleportAvatarToSlot(AActor* Avatar, FSmartObjectSlotHandle SlotHandle)
+{
+	if (Avatar == nullptr)
+	{
+		UE_LOGFMT(LogTemp, Warning, "[{FUNC}] : InAvatar is nullptr.", __FUNCTION__);
+		return;
+	}
+
+	// Get SlotTransform
+	FTransform SlotTransform;
+	if (!GetSlotTransform(SlotTransform, Avatar, SlotHandle))
+	{
+		return;
+	}
+
+	// Set Avatar Transform
+	Avatar->SetActorTransform(SlotTransform);
+}
+
 void UGameplayBehavior_NPC_PlayMontage::AddOrUpdateWarpTargetToSlot(AActor* Avatar, FName SlotMotionWarpingName, FSmartObjectSlotHandle SlotHandle)
 {
 	if (SlotMotionWarpingName.IsNone())
@@ -178,6 +200,28 @@ void UGameplayBehavior_NPC_PlayMontage::AddOrUpdateWarpTargetToSlot(AActor* Avat
 		return;
 	}
 
+	// Get SlotTransform
+	FTransform SlotTransform;
+	if (!GetSlotTransform(SlotTransform, Avatar, SlotHandle))
+	{
+		return;
+	}
+
+	// Update motion Warping
+	UMotionWarpingComponent* MotionWarpingComp = Avatar->FindComponentByClass<UMotionWarpingComponent>();
+	if (MotionWarpingComp == nullptr)
+	{
+		UE_LOGFMT(LogTemp, Warning, "[{FUNC}] : failed to find UMotionWarpingComponent in {obj}.", __FUNCTION__, Avatar->GetName());
+		return;
+	}
+	else
+	{
+		MotionWarpingComp->AddOrUpdateWarpTargetFromTransform(SlotMotionWarpingName, SlotTransform);
+	}
+}
+
+bool UGameplayBehavior_NPC_PlayMontage::GetSlotTransform(FTransform& ResultSloTransform, AActor* Avatar, FSmartObjectSlotHandle SlotHandle) const
+{
 	// Operate SlotHandle
 	if (!SlotHandle.IsValid())
 	{
@@ -193,7 +237,7 @@ void UGameplayBehavior_NPC_PlayMontage::AddOrUpdateWarpTargetToSlot(AActor* Avat
 	if (!SlotHandle.IsValid())
 	{
 		UE_LOGFMT(LogTemp, Warning, "[{FUNC}] : SlotHandle is invalid.", __FUNCTION__);
-		return;
+		return false;
 	}
 
 	// Get SlotTransform
@@ -201,18 +245,9 @@ void UGameplayBehavior_NPC_PlayMontage::AddOrUpdateWarpTargetToSlot(AActor* Avat
 	if (!USmartObjectBlueprintFunctionLibraryEx::GetSlotTransformWithSlotHandle(Avatar, SlotTransform, SlotHandle))
 	{
 		UE_LOGFMT(LogTemp, Warning, "[{FUNC}] : failed to get slotTransform.", __FUNCTION__);
-		return;
+		return false;
 	}
 
-	// Update motion Warping
-	UMotionWarpingComponent* MotionWarpingComp = Avatar->FindComponentByClass<UMotionWarpingComponent>();
-	if (MotionWarpingComp == nullptr)
-	{
-		UE_LOGFMT(LogTemp, Warning, "[{FUNC}] : failed to find UMotionWarpingComponent in {obj}.", __FUNCTION__, Avatar->GetName());
-		return;
-	}
-	else
-	{
-		MotionWarpingComp->AddOrUpdateWarpTargetFromTransform(SlotMotionWarpingName, SlotTransform);
-	}
+	ResultSloTransform = SlotTransform;
+	return true;
 }

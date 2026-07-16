@@ -25,6 +25,7 @@ public:
 	FName GetStartSectionName() const { return StartSectionName; }
 	bool IsLooped() const { return (bLoop != 0); }
 	FName GetSlotMotionWarpingName() const { return SlotMotionWarpingName; }
+	bool IsTeleportAvatarToSlotTransform() const { return (bTeleportAvatarToSlotTransform != 0); }
 	float GetPlayTimeWithingRandomDeviation() const;
 
 
@@ -50,7 +51,11 @@ protected:
 	UPROPERTY(EditAnywhere, Category = SmartObject, meta = (EditCondition = "PlayTime > 0.0", EditConditionHides, ToolTip = "Random deviation in seconds to add to PlayTime. The final PlayTime will be in the range [PlayTime - PlayTimeRandomDeviation, PlayTime + PlayTimeRandomDeviation]"))
 	float PlayTimeRandomDeviation = 0.f;
 
-	UPROPERTY(EditAnywhere, Category = SmartObject, meta=(ToolTip = "Warping Avatar to SlotTransform.\nRemember to add a motion warpping window for target montage."))
+
+	UPROPERTY(EditAnywhere, Category = SmartObject, meta=(ToolTip = "If true, the avatar will be teleported to Slot when the GameplayBehavior is triggered."))
+	uint32 bTeleportAvatarToSlotTransform : 1;
+
+	UPROPERTY(EditAnywhere, Category = SmartObject, meta=(EditCondition = "!bTeleportAvatarToSlotTransform", EditConditionHides, ToolTip = "Warping Avatar to SlotTransform.\nNOTE: 1.MotionWarping will be ineffective if [bTeleportAvatarToSlotTransform = True]  2.Remember to add a motion warpping window for target montage if you need MotionWarping."))
 	FName SlotMotionWarpingName = TEXT("SmartObjectWarp");
 
 	UPROPERTY()
