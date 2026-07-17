@@ -195,6 +195,7 @@ bool UBTTask_MoveAndUseSmartObject::StartInteraction()
 	// Behavior can be successfully triggered AND ended synchronously. We are only interested to register callback when still running
 	if (bBehaviorActive)
 	{
+		bBehaviorFinished = false;
 		OnBehaviorFinishedNotifyHandle = GameplayBehavior->GetOnBehaviorFinishedDelegate().AddUObject(this, &UBTTask_MoveAndUseSmartObject::OnSmartObjectBehaviorFinished);
 
 		// Operate the interface for Interactor/Interactee. You can remove the code according to your project
@@ -237,7 +238,7 @@ void UBTTask_MoveAndUseSmartObject::Abort()
 	FinishExecute(false);
 }
 
-
+/* Call when GameplayBehavior activating */
 void UBTTask_MoveAndUseSmartObject::OnSmartObjectBehaviorFinished(UGameplayBehavior& Behavior, AActor& Avatar, const bool bInterrupted)
 {
 	// Adding an ensure in case the assumptions change in the future.
@@ -255,11 +256,13 @@ void UBTTask_MoveAndUseSmartObject::OnSmartObjectBehaviorFinished(UGameplayBehav
 
 void UBTTask_MoveAndUseSmartObject::OnSlotInvalidated(const FSmartObjectClaimHandle& ClaimHandle, ESmartObjectSlotState State)
 {
+	// This might occur in GameplayBehavior activating or Moving to slot
 	Abort();
 }
 
 void UBTTask_MoveAndUseSmartObject::OnReceiveSmartObjectEvent(const FSmartObjectEventData& Event)
 {
+	// This might occur in GameplayBehavior activating or Moving to slot
 	if (Event.Reason == ESmartObjectChangeReason::OnSlotDisabled || Event.Reason == ESmartObjectChangeReason::OnObjectDisabled)
 	{
 		Abort();

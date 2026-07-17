@@ -63,3 +63,36 @@ bool USmartObjectBlueprintFunctionLibraryEx::GetSOClaimHandleFromInteractor(AAct
 	return false;
 }
 
+int32 USmartObjectBlueprintFunctionLibraryEx::GetOccupyingSlotCount(UObject* WorldContextObject, const FSmartObjectHandle& InSmartObjectHandle)
+{
+	if (!InSmartObjectHandle.IsValid())
+	{
+		UE_LOGFMT(LogTemp, Warning, "[{FUNC}] : InSmartObjectHandle is invalid.", __FUNCTION__);
+		return 0;
+	}
+
+	USmartObjectSubsystem* SmartObjectSubsystem = USmartObjectSubsystem::GetCurrent(WorldContextObject->GetWorld());
+	if (SmartObjectSubsystem == nullptr)
+	{
+		UE_LOGFMT(LogTemp, Warning, "[{FUNC}] : SmartObjectSubsystem is invalid.", __FUNCTION__);
+		return 0;
+	}
+
+	int32 OccupiedSlotCount = 0;
+
+	TArray<FSmartObjectSlotHandle> AllSlotHandles;
+	SmartObjectSubsystem->GetAllSlots(InSmartObjectHandle, AllSlotHandles);
+	if (AllSlotHandles.Num() > 0)
+	{
+		for (const FSmartObjectSlotHandle& SlotHandle : AllSlotHandles)
+		{
+			if (SmartObjectSubsystem->GetSlotState(SlotHandle) == ESmartObjectSlotState::Occupied)
+			{
+				OccupiedSlotCount++;
+			}
+		}
+	}
+
+	return OccupiedSlotCount;
+}
+

@@ -51,7 +51,7 @@ struct FStateTreeFindSmartObjectInstanceData
 
 	/** Used for smart object querying if QueryTemplate is not configured */
 	UPROPERTY(EditAnywhere, Category = Parameter , meta=(DisplayName = "QueryBoxRadius", UIMin = "0.0", EditCondition = "QueryTemplate == nullptr"))
-	float Radius;
+	float Radius = 0.f;
 
 	UPROPERTY(EditAnywhere, Category = Parameter , meta=(DisplayName = "SlotSelectionMethod", EditCondition = "QueryTemplate == nullptr"))
 	ESlotSelectionMethodForSTFindSmartObject SlotSelectionMethod = ESlotSelectionMethodForSTFindSmartObject::Closest;

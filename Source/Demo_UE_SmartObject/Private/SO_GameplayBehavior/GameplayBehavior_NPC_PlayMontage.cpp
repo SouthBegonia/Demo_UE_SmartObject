@@ -166,8 +166,27 @@ void UGameplayBehavior_NPC_PlayMontage::OnMontageFinishedNew(UAnimMontage* Monta
 
 void UGameplayBehavior_NPC_PlayMontage::OnPlayTimerFinished(UAnimMontage* Montage, AActor* InAvatar)
 {
-	// Timer of PlayTime finished, regard this situation as an interruption
-	EndBehavior(*InAvatar, true);
+	// Note: You can choose one of logic to EndBehavior, the result of bInterrupted will affect the BT/ST
+
+	// PlanA: Timer of PlayTime finished, regard this situation as a [normal termination]
+	FMontagePlaybackData* PlaybackData = ActivePlayback.FindByPredicate([&](const FMontagePlaybackData& Entry) { return Entry == InAvatar; });
+	if (PlaybackData)
+	{
+		UWorld* World = InAvatar->GetWorld();
+		if (World && PlaybackData->TimerHandle.IsValid())
+		{
+			World->GetTimerManager().ClearTimer(PlaybackData->TimerHandle);
+		}
+		if (PlaybackData->AbilityComponent && PlaybackData->AnimMontage)
+		{
+			PlaybackData->AbilityComponent->StopMontageIfCurrent(*PlaybackData->AnimMontage);
+		}
+		ActivePlayback.RemoveSingleSwap(*PlaybackData, EAllowShrinking::No);
+	}
+	EndBehavior(*InAvatar, false);
+
+	// PlanB: Timer of PlayTime finished, regard this situation as an [interruption]
+	//EndBehavior(*InAvatar, true);
 }
 
 void UGameplayBehavior_NPC_PlayMontage::TeleportAvatarToSlot(AActor* Avatar, FSmartObjectSlotHandle SlotHandle)

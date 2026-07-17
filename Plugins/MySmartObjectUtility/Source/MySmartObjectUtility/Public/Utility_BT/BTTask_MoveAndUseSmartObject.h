@@ -59,7 +59,8 @@ protected:
 	FDelegateHandle OnBehaviorFinishedNotifyHandle;
 	FDelegateHandle OnReceiveSmartObjectEventDelegateHandle;
 
-	bool bBehaviorFinished;
+	UPROPERTY(Transient)
+	bool bBehaviorFinished = false;
 
 
 	bool StartInteraction();

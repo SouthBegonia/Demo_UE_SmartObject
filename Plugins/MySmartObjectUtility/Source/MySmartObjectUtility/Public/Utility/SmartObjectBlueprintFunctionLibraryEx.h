@@ -28,4 +28,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "SmartObject")
 	static bool GetSOClaimHandleFromInteractor(AActor* Interactor, FSmartObjectClaimHandle& OutSOClaimHandle, const FString& ClaimHandleBlackboardKeyName = FString(""));
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "SmartObject")
+	static int32 GetOccupyingSlotCount(UObject* WorldContextObject, const FSmartObjectHandle& InSmartObjectHandle);
 };
