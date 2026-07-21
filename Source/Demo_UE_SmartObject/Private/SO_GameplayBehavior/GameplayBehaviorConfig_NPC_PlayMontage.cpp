@@ -14,8 +14,7 @@ UGameplayBehaviorConfig_NPC_PlayMontage::UGameplayBehaviorConfig_NPC_PlayMontage
 
 UAnimMontage* UGameplayBehaviorConfig_NPC_PlayMontage::GetMontage() const
 {
-	if (TargetAnimMontage != nullptr)
-		return TargetAnimMontage;
+	UAnimMontage* TargetAnimMontage = nullptr;
 
 	if (!AnimMontage.IsNull())
 	{

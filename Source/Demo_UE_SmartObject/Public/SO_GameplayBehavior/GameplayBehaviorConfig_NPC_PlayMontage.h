@@ -57,7 +57,4 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = SmartObject, meta=(EditCondition = "!bTeleportAvatarToSlotTransform", EditConditionHides, ToolTip = "Warping Avatar to SlotTransform.\nNOTE: 1.MotionWarping will be ineffective if [bTeleportAvatarToSlotTransform = True]  2.Remember to add a motion warpping window for target montage if you need MotionWarping."))
 	FName SlotMotionWarpingName = TEXT("SmartObjectWarp");
-
-	UPROPERTY()
-	mutable TObjectPtr<UAnimMontage> TargetAnimMontage;
 };
