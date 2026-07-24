@@ -32,11 +32,6 @@ ANPCCharacter::ANPCCharacter()
 	GetCharacterMovement()->AvoidanceWeight = 0.5f;		// a neutral value is 0.5f
 
 
-	// Optimization settings
-	GetMesh()->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::OnlyTickPoseWhenRendered;
-	GetMesh()->bEnableUpdateRateOptimizations = true;
-
-
 	// Core Components
 	SOUerComp = CreateDefaultSubobject<USmartObjectUserComponent>("SOUerComp");
 
@@ -47,6 +42,14 @@ ANPCCharacter::ANPCCharacter()
 	{
 		ASC->SetIsReplicated(true);
 		ASC->SetReplicationMode(EGameplayEffectReplicationMode::Minimal);
+	}
+
+	// Optimization settings
+	GetMesh()->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::OnlyTickPoseWhenRendered;
+	GetMesh()->bEnableUpdateRateOptimizations = true;
+	if (IsValid(ASC))
+	{
+		ASC->SetMontageRepAnimPositionMethod(ERepAnimPositionMethod::CurrentSectionId);
 	}
 }
 
