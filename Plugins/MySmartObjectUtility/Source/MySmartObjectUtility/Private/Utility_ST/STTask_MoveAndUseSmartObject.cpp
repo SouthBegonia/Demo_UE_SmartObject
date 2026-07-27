@@ -4,7 +4,6 @@
 #include "GameplayBehaviorConfig.h"
 #include "GameplayBehaviorSmartObjectBehaviorDefinition.h"
 #include "GameplayBehaviorSubsystem.h"
-#include "MotionWarpingComponent.h"
 #include "SmartObjectComponent.h"
 #include "StateTreeExecutionContext.h"
 #include "StateTreeLinker.h"
@@ -223,8 +222,28 @@ bool FSTTask_MoveAndUseSmartObject::StartInteraction(FStateTreeExecutionContext&
 		{
 			if (FInstanceDataType* InnerInstanceData = InstanceDataRef.GetPtr())
 			{
-				InnerBehavior.GetOnBehaviorFinishedDelegate().Remove(InnerInstanceData->OnBehaviorFinishedNotifyHandle);
-				InnerInstanceData->bBehaviorFinished = true;
+				/*
+				// The Avatar from context
+				AActor* AvatarFromInstanceData = InnerInstanceData->AIController ? InnerInstanceData->AIController->GetPawn() : nullptr;
+
+				// GetAvatar() return nullptr if the GameplayBehavior was a CDO, so wo can't use it to check if the behavior is finished for the right avatar
+				AActor* AvatarFromBehavior = InnerInstanceData->GameplayBehavior->GetAvatar();
+
+				// The Avatar just finished the behavior
+				AActor* AvatarFromCallback = &InnerAvatar;
+				*/
+
+				AActor* SelfAvatarActor = InnerInstanceData->AIController ? InnerInstanceData->AIController->GetPawn() : nullptr;	// Equivalent to the code above: `AActor& InteractorActor = *InstanceData.AIController->GetPawn();`
+				check(SelfAvatarActor != nullptr);
+
+				// Check is the right avatar
+				if (SelfAvatarActor == &InnerAvatar)
+				{
+					// Unregister Event - BehaviorEvent
+					InnerBehavior.GetOnBehaviorFinishedDelegate().Remove(InnerInstanceData->OnBehaviorFinishedNotifyHandle);
+					// Marking the GameplayBehavior finished
+					InnerInstanceData->bBehaviorFinished = true;
+				}
 			}
 		});
 
