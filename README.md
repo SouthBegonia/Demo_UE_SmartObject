@@ -1,10 +1,26 @@
+![](https://southbegonia.oss-cn-chengdu.aliyuncs.com/Pic/20260728173437481.png)
+
 这是一个对 UE5 中 [SmartObjects](https://dev.epicgames.com/documentation/unreal-engine/smart-objects-in-unreal-engine?application_version=5.5) 功能模块的 **用法演示** 及 **功能拓展**。通过该项目你能获知：
 
-- SmartObject的基本交互流程（概念+实例）
+- **SmartObject的 基本用法**：
+  - 在流程载体（BehaviorTree/StateTree）下 寻找交互、交互表现、交互完成的 流程实现
 
-- 如何实现 自由度更高的交互细节设置、交互行为表现
+- **SmartObject各模块的 详细用法**：
+  - 交互定义（SmartObjectDefinition）：Slot的创建及使用、UserTag/ActivityTag的规划及配置、Entrance/Exit点的创建及使用
+  - 交互行为（SmartObjectBehavior）：C++/BP对Behavior的实现，及其在流程载体内的生命周期管理
+  - 智能对象组件（SmartObjectComponent）：以该组件为核心创建的 交互对象（SmartObjectActor），并附加Editor相关Component，支持网络同步及更直观的开发预览
+  - `USmartObjectSubsystem`/`USmartObjectBlueprintFunctionLibrary` 内实用API的用法示例
 
-- 一些实践经验总结
+- **【扩展】更高自由度的 交互细节设置、交互行为表现**：
+  - BT/ST内 涉及交互流程的 节点扩展/拆分/重写，暴露更多配置参数给业务
+  - 更复杂且支持网络同步的 交互行为示例（例如 单/多/随机Montage的播放、Montage的随机延时结束）
+  - 建立交互双方对交互过程的感知能力（Interactor/Interactee的接口划分、InteractionEventBegin/End）
+  - 交互者与被交互的 位置/朝向匹配（AutoMoving/MotionWarping/Teleport），交互者与被交互对象的Collision处理
+
+- **一些实践经验总结**：
+  - 较好符合 交互对象（NPC）的 功能组件（ASC/MotionWarpingComp）、配置参数（Movement/RVO）
+  - 有效优化 寻路消耗、动画更新、网络同步 的参数设置
+
 
 
 
@@ -150,3 +166,13 @@ Demo_UE_SmartObject
 |              业务封装-SO              | 官方提供的SO基类（`AGenericSmartObject`）默认Hidden的，不好结合StaticMesh组装为SO（当然这不是必须的，只要SO最终能与StaticMesh坐标适配即可） | 封装一个SO基类（`ASmartObjectActorBase`），并接入上文的 `InteracteeInterface`，但未预设添加StaticMesh，可按需调整 | [Actors](https://github.com/SouthBegonia/Demo_UE_SmartObject/tree/main/Plugins/MySmartObjectUtility/Source/MySmartObjectUtility/Public/Actors) |
 |          业务封装-Character           | 严格来讲一个Character是无需额外Comp就可进行SO交互的，但缺失某些Comp 可能会让交互表现单一 | 从`ACharacter`派生出`ANPCCharacter `并预设功能组件（`USmartObjectUserComponent`用以标识交互者；`UMotionWarpingComponent`用以处理交互位置；`UAbilitySystemComponent`用以处理动画的网络同步）；同时也接入上文的 `InteractorInterface`；以及设定了AI单位常用的配置参数（RVO/Movement/Rotation） | [Actors](https://github.com/SouthBegonia/Demo_UE_SmartObject/tree/main/Plugins/MySmartObjectUtility/Source/MySmartObjectUtility/Public/Actors) |
 |         业务封装-AIController         |      避免各NPC需要差异化添加BT/ST组件 以走AILogic的问题      | 从`AAIController`派生出`ANPCAIController `并实现 BT/ST流程自选化 | [Actors](https://github.com/SouthBegonia/Demo_UE_SmartObject/tree/main/Plugins/MySmartObjectUtility/Source/MySmartObjectUtility/Public/Actors) |
+
+
+
+![](https://southbegonia.oss-cn-chengdu.aliyuncs.com/Pic/CrossLine_01.png)
+
+
+
+## 参考文章
+
+- [【Smart Object】源码解析 - Leoyao](https://zhuanlan.zhihu.com/p/1976089074885473974)
